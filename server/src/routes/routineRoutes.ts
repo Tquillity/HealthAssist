@@ -1,6 +1,15 @@
 import express from 'express';
 import Routine from '../models/Routine';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
+import upload from '../middleware/upload';
+
+// Admin-only middleware
+const requireAdmin = (req: AuthRequest, res: any, next: any) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  next();
+};
 
 const router = express.Router();
 
@@ -90,8 +99,28 @@ router.post('/lottery', authenticateToken, async (req: AuthRequest, res) => {
   }
 });
 
-// Create new routine (admin/seed function)
-router.post('/', authenticateToken, async (req: AuthRequest, res) => {
+// Upload routine image (Admin only)
+router.post('/upload-image', authenticateToken, requireAdmin, upload.single('image'), async (req: AuthRequest, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image file provided' });
+    }
+
+    // Return the file path for the frontend to use
+    const imageUrl = `/uploads/${req.file.filename}`;
+    res.json({
+      message: 'Image uploaded successfully',
+      imageUrl: imageUrl,
+      filename: req.file.filename
+    });
+  } catch (error) {
+    console.error('Image upload error:', error);
+    res.status(500).json({ message: 'Server error uploading image' });
+  }
+});
+
+// Create new routine (Admin only)
+router.post('/', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
     const routineData = {
       ...req.body,
@@ -111,8 +140,8 @@ router.post('/', authenticateToken, async (req: AuthRequest, res) => {
   }
 });
 
-// Update routine
-router.put('/:id', authenticateToken, async (req: AuthRequest, res) => {
+// Update routine (Admin only)
+router.put('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
     const routine = await Routine.findByIdAndUpdate(
       req.params.id,
@@ -134,8 +163,8 @@ router.put('/:id', authenticateToken, async (req: AuthRequest, res) => {
   }
 });
 
-// Delete routine (soft delete)
-router.delete('/:id', authenticateToken, async (req: AuthRequest, res) => {
+// Delete routine (Admin only - soft delete)
+router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
     const routine = await Routine.findByIdAndUpdate(
       req.params.id,

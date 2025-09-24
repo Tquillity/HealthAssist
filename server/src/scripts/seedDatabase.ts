@@ -542,12 +542,14 @@ async function seedDatabase() {
     console.log(`Created ${educationalResources.length} educational resources`);
 
     // Create a sample user for testing
-    const existingUser = await User.findOne({ email: 'test@example.com' });
+    const userEmail = process.env.SEED_USER_EMAIL || 'test@example.com';
+    const userPassword = process.env.SEED_USER_PASSWORD || 'password123';
+    const existingUser = await User.findOne({ email: userEmail });
     if (!existingUser) {
-      const hashedPassword = await bcrypt.hash('password123', 12);
+      const hashedPassword = await bcrypt.hash(userPassword, 12);
       const sampleUser = new User({
         username: 'testuser',
-        email: 'test@example.com',
+        email: userEmail,
         password: hashedPassword,
         householdId: 'sample_household',
         role: 'user',
@@ -565,16 +567,18 @@ async function seedDatabase() {
         }
       });
       await sampleUser.save();
-      console.log('Created sample user: test@example.com / password123');
+      console.log(`Created sample user: ${userEmail} / ${userPassword}`);
     }
 
     // Create an admin user
-    const existingAdmin = await User.findOne({ email: 'admin@healthhub.com' });
+    const adminEmail = process.env.SEED_ADMIN_EMAIL || 'admin@healthhub.com';
+    const adminPassword = process.env.SEED_ADMIN_PASSWORD || 'admin123';
+    const existingAdmin = await User.findOne({ email: adminEmail });
     if (!existingAdmin) {
-      const hashedPassword = await bcrypt.hash('admin123', 12);
+      const hashedPassword = await bcrypt.hash(adminPassword, 12);
       const adminUser = new User({
         username: 'admin',
-        email: 'admin@healthhub.com',
+        email: adminEmail,
         password: hashedPassword,
         householdId: 'admin_household',
         role: 'admin',
@@ -592,16 +596,16 @@ async function seedDatabase() {
         }
       });
       await adminUser.save();
-      console.log('Created admin user: admin@healthhub.com / admin123');
+      console.log(`Created admin user: ${adminEmail} / ${adminPassword}`);
     }
 
     console.log('Database seeding completed successfully!');
     console.log('\nSample user credentials:');
-    console.log('Email: test@example.com');
-    console.log('Password: password123');
+    console.log(`Email: ${userEmail}`);
+    console.log(`Password: ${userPassword}`);
     console.log('\nAdmin user credentials:');
-    console.log('Email: admin@healthhub.com');
-    console.log('Password: admin123');
+    console.log(`Email: ${adminEmail}`);
+    console.log(`Password: ${adminPassword}`);
     
   } catch (error) {
     console.error('Error seeding database:', error);

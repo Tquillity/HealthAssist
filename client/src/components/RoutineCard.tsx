@@ -5,9 +5,19 @@ interface RoutineCardProps {
   routine: Routine;
   onClick?: () => void;
   showLottery?: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  showAdminControls?: boolean;
 }
 
-const RoutineCard: React.FC<RoutineCardProps> = ({ routine, onClick, showLottery = false }) => {
+const RoutineCard: React.FC<RoutineCardProps> = ({ 
+  routine, 
+  onClick, 
+  showLottery = false, 
+  onEdit, 
+  onDelete, 
+  showAdminControls = false 
+}) => {
   const getCategoryIcon = (category: string) => {
     const icons: { [key: string]: string } = {
       breathwork: '🌬️',
@@ -60,6 +70,34 @@ const RoutineCard: React.FC<RoutineCardProps> = ({ routine, onClick, showLottery
             <span className="bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full">
               🎲 LOTTERY
             </span>
+          </div>
+        )}
+        {showAdminControls && (
+          <div className="absolute top-3 right-3 flex gap-2">
+            {onEdit && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit();
+                }}
+                className="bg-blue-500 text-white p-1 rounded-full hover:bg-blue-600 transition-colors"
+                title="Edit routine"
+              >
+                ✏️
+              </button>
+            )}
+            {onDelete && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+                className="bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+                title="Delete routine"
+              >
+                🗑️
+              </button>
+            )}
           </div>
         )}
       </div>

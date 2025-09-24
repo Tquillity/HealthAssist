@@ -17,7 +17,9 @@ const storage = multer.diskStorage({
     // Generate unique filename with timestamp
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const ext = path.extname(file.originalname);
-    cb(null, `recipe-${uniqueSuffix}${ext}`);
+    // Determine prefix based on route
+    const prefix = req.baseUrl.includes('/recipes') ? 'recipe' : 'routine';
+    cb(null, `${prefix}-${uniqueSuffix}${ext}`);
   }
 });
 

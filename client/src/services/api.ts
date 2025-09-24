@@ -55,6 +55,11 @@ export const routinesAPI = {
   update: (id: string, data: any) => api.put(`/routines/${id}`, data),
   delete: (id: string) => api.delete(`/routines/${id}`),
   getMetadata: () => api.get('/routines/meta/categories'),
+  uploadImage: (formData: FormData) => api.post('/routines/upload-image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }),
 };
 
 // Recipes API

@@ -1,17 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { routinesAPI } from '../services/api';
 import { Routine, RoutineFilters, LotteryRequest } from '../types';
+import { useAuth } from '../store/AuthContext';
 import RoutineCard from '../components/RoutineCard';
 import RoutineFiltersComponent from '../components/RoutineFilters';
 import LotteryModal from '../components/LotteryModal';
+import RoutineForm from '../components/RoutineForm';
 
 const Routines: React.FC = () => {
+  const { state } = useAuth();
   const [routines, setRoutines] = useState<Routine[]>([]);
   const [filteredRoutines, setFilteredRoutines] = useState<Routine[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<RoutineFilters>({});
   const [showLotteryModal, setShowLotteryModal] = useState(false);
   const [selectedRoutines, setSelectedRoutines] = useState<Routine[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editingRoutine, setEditingRoutine] = useState<Routine | null>(null);
+  const [formLoading, setFormLoading] = useState(false);
+
+  const isAdmin = state.user?.role === 'admin';
 
   const fetchRoutines = async () => {
     try {
@@ -73,13 +81,76 @@ const Routines: React.FC = () => {
     setFilters({});
   };
 
+  const handleCreateRoutine = () => {
+    setEditingRoutine(null);
+    setShowForm(true);
+  };
+
+  const handleEditRoutine = (routine: Routine) => {
+    setEditingRoutine(routine);
+    setShowForm(true);
+  };
+
+  const handleDeleteRoutine = async (routine: Routine) => {
+    if (!window.confirm(`Are you sure you want to delete "${routine.title}"?`)) {
+      return;
+    }
+
+    try {
+      await routinesAPI.delete(routine._id);
+      await fetchRoutines();
+    } catch (error) {
+      console.error('Error deleting routine:', error);
+      alert('Failed to delete routine. Please try again.');
+    }
+  };
+
+  const handleFormSubmit = async (routineData: Partial<Routine>) => {
+    try {
+      setFormLoading(true);
+      
+      if (editingRoutine) {
+        await routinesAPI.update(editingRoutine._id, routineData);
+      } else {
+        await routinesAPI.create(routineData);
+      }
+      
+      setShowForm(false);
+      setEditingRoutine(null);
+      await fetchRoutines();
+    } catch (error) {
+      console.error('Error saving routine:', error);
+      alert('Failed to save routine. Please try again.');
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  const handleFormCancel = () => {
+    setShowForm(false);
+    setEditingRoutine(null);
+  };
+
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Wellness Routines</h1>
-        <p className="text-gray-600">
-          Discover and practice routines for better health and wellness
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Wellness Routines</h1>
+            <p className="text-gray-600">
+              Discover and practice routines for better health and wellness
+            </p>
+          </div>
+          {isAdmin && (
+            <button
+              onClick={handleCreateRoutine}
+              className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2"
+            >
+              <span>+</span>
+              Add Routine
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Lottery Section */}
@@ -141,6 +212,9 @@ const Routines: React.FC = () => {
                 // Handle routine selection/viewing
                 console.log('Selected routine:', routine.title);
               }}
+              onEdit={isAdmin ? () => handleEditRoutine(routine) : undefined}
+              onDelete={isAdmin ? () => handleDeleteRoutine(routine) : undefined}
+              showAdminControls={isAdmin}
             />
           ))}
         </div>
@@ -168,6 +242,33 @@ const Routines: React.FC = () => {
           onLottery={handleLottery}
           selectedRoutines={selectedRoutines}
         />
+      )}
+
+      {/* Routine Form Modal */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {editingRoutine ? 'Edit Routine' : 'Create New Routine'}
+                </h2>
+                <button
+                  onClick={handleFormCancel}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <span className="text-2xl">×</span>
+                </button>
+              </div>
+              <RoutineForm
+                routine={editingRoutine || undefined}
+                onSubmit={handleFormSubmit}
+                onCancel={handleFormCancel}
+                loading={formLoading}
+              />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
