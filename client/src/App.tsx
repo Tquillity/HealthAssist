@@ -10,6 +10,7 @@ import Journal from './pages/Journal';
 import Educational from './pages/Educational';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AuthCallback from './pages/AuthCallback';
 import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
@@ -23,8 +24,9 @@ function App() {
           <Navbar />
           <main className="container mx-auto px-4 py-8">
             <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route 
                 path="/dashboard" 

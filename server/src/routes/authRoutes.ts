@@ -1,6 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import passport from 'passport';
 import User from '../models/User';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 
@@ -74,6 +75,11 @@ router.post('/login', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    // Check if user has a password (not a Google OAuth user)
+    if (!user.password) {
+      return res.status(401).json({ message: 'Please use Google sign-in for this account' });
     }
 
     // Check password
@@ -157,5 +163,39 @@ router.get('/household/:householdId', authenticateToken, async (req: AuthRequest
     res.status(500).json({ message: 'Server error fetching household members' });
   }
 });
+
+// Google OAuth routes
+router.get('/google', passport.authenticate('google', {
+  scope: ['profile', 'email']
+}));
+
+router.get('/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  async (req: any, res) => {
+    try {
+      const user = req.user;
+      
+      // Generate JWT token
+      const token = jwt.sign(
+        { userId: user._id, householdId: user.householdId },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { expiresIn: '7d' }
+      );
+
+      // Redirect to frontend with token
+      const frontendUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+      res.redirect(`${frontendUrl}/auth/callback?token=${token}&user=${encodeURIComponent(JSON.stringify({
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        householdId: user.householdId,
+        profile: user.profile
+      }))}`);
+    } catch (error) {
+      console.error('Google OAuth callback error:', error);
+      res.redirect(`${process.env.CLIENT_URL || 'http://localhost:3000'}/login?error=oauth_failed`);
+    }
+  }
+);
 
 export default router;

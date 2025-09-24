@@ -3,8 +3,9 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IUser extends Document {
   username: string;
   email: string;
-  password: string;
+  password?: string; // Optional for Google OAuth users
   householdId: string;
+  googleId?: string; // Google OAuth ID
   preferences: {
     energy: 'low' | 'medium' | 'high';
     preferredContext: 'morning' | 'evening' | 'anytime';
@@ -18,6 +19,7 @@ export interface IUser extends Document {
     dateOfBirth?: Date;
     gender?: 'male' | 'female' | 'other';
     timezone: string;
+    avatar?: string; // Google profile picture
   };
   createdAt: Date;
   updatedAt: Date;
@@ -41,8 +43,15 @@ const UserSchema = new Schema<IUser>({
   },
   password: {
     type: String,
-    required: true,
+    required: function() {
+      return !this.googleId; // Only required if not using Google OAuth
+    },
     minlength: 6
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true // Allows multiple null values
   },
   householdId: {
     type: String,
@@ -94,6 +103,9 @@ const UserSchema = new Schema<IUser>({
     timezone: {
       type: String,
       default: 'UTC'
+    },
+    avatar: {
+      type: String
     }
   }
 }, {
