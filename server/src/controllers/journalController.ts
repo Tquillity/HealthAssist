@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import JournalEntry from '../models/JournalEntry';
+import { AuthRequest } from '../middleware/auth';
 
 // Create journal entry
-export const createJournalEntry = async (req: Request, res: Response) => {
+export const createJournalEntry = async (req: AuthRequest, res: Response) => {
   try {
     const entryData = {
       ...req.body,
@@ -20,7 +21,7 @@ export const createJournalEntry = async (req: Request, res: Response) => {
 };
 
 // Get all journal entries for user
-export const getJournalEntries = async (req: Request, res: Response) => {
+export const getJournalEntries = async (req: AuthRequest, res: Response) => {
   try {
     const { startDate, endDate, limit = 50 } = req.query;
     
@@ -45,7 +46,7 @@ export const getJournalEntries = async (req: Request, res: Response) => {
 };
 
 // Get journal entry by ID
-export const getJournalEntryById = async (req: Request, res: Response) => {
+export const getJournalEntryById = async (req: AuthRequest, res: Response) => {
   try {
     const entry = await JournalEntry.findOne({
       _id: req.params.id,
@@ -64,7 +65,7 @@ export const getJournalEntryById = async (req: Request, res: Response) => {
 };
 
 // Get journal entry by date
-export const getJournalEntryByDate = async (req: Request, res: Response) => {
+export const getJournalEntryByDate = async (req: AuthRequest, res: Response) => {
   try {
     const { date } = req.params;
     const startOfDay = new Date(date);
@@ -88,7 +89,7 @@ export const getJournalEntryByDate = async (req: Request, res: Response) => {
 };
 
 // Update journal entry
-export const updateJournalEntry = async (req: Request, res: Response) => {
+export const updateJournalEntry = async (req: AuthRequest, res: Response) => {
   try {
     const entry = await JournalEntry.findOneAndUpdate(
       { _id: req.params.id, userId: req.user._id },
@@ -108,7 +109,7 @@ export const updateJournalEntry = async (req: Request, res: Response) => {
 };
 
 // Delete journal entry
-export const deleteJournalEntry = async (req: Request, res: Response) => {
+export const deleteJournalEntry = async (req: AuthRequest, res: Response) => {
   try {
     const entry = await JournalEntry.findOneAndDelete({
       _id: req.params.id,
@@ -127,7 +128,7 @@ export const deleteJournalEntry = async (req: Request, res: Response) => {
 };
 
 // Get journal analytics
-export const getJournalAnalytics = async (req: Request, res: Response) => {
+export const getJournalAnalytics = async (req: AuthRequest, res: Response) => {
   try {
     const { startDate, endDate } = req.query;
     

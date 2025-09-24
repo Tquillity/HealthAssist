@@ -3,9 +3,10 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IUser extends Document {
   username: string;
   email: string;
-  password?: string; // Optional for Google OAuth users
+  password?: string; // Optional for OAuth users
   householdId: string;
   googleId?: string; // Google OAuth ID
+  xId?: string; // X (Twitter) OAuth ID
   preferences: {
     energy: 'low' | 'medium' | 'high';
     preferredContext: 'morning' | 'evening' | 'anytime';
@@ -44,11 +45,16 @@ const UserSchema = new Schema<IUser>({
   password: {
     type: String,
     required: function() {
-      return !this.googleId; // Only required if not using Google OAuth
+      return !this.googleId && !this.xId; // Only required if not using OAuth
     },
     minlength: 6
   },
   googleId: {
+    type: String,
+    unique: true,
+    sparse: true // Allows multiple null values
+  },
+  xId: {
     type: String,
     unique: true,
     sparse: true // Allows multiple null values

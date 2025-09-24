@@ -77,9 +77,9 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Check if user has a password (not a Google OAuth user)
+    // Check if user has a password (not an OAuth user)
     if (!user.password) {
-      return res.status(401).json({ message: 'Please use Google sign-in for this account' });
+      return res.status(401).json({ message: 'Please use OAuth sign-in for this account' });
     }
 
     // Check password
@@ -193,6 +193,40 @@ router.get('/google/callback',
       }))}`);
     } catch (error) {
       console.error('Google OAuth callback error:', error);
+      res.redirect(`${process.env.CLIENT_URL || 'http://localhost:3000'}/login?error=oauth_failed`);
+    }
+  }
+);
+
+// X (Twitter) OAuth routes
+router.get('/x', passport.authenticate('twitter', {
+  scope: ['tweet.read', 'users.read']
+}));
+
+router.get('/x/callback', 
+  passport.authenticate('twitter', { failureRedirect: '/login' }),
+  async (req: any, res) => {
+    try {
+      const user = req.user;
+      
+      // Generate JWT token
+      const token = jwt.sign(
+        { userId: user._id, householdId: user.householdId },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { expiresIn: '7d' }
+      );
+
+      // Redirect to frontend with token
+      const frontendUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+      res.redirect(`${frontendUrl}/auth/callback?token=${token}&user=${encodeURIComponent(JSON.stringify({
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        householdId: user.householdId,
+        profile: user.profile
+      }))}`);
+    } catch (error) {
+      console.error('X OAuth callback error:', error);
       res.redirect(`${process.env.CLIENT_URL || 'http://localhost:3000'}/login?error=oauth_failed`);
     }
   }
