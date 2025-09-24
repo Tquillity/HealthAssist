@@ -2,38 +2,31 @@
 
 ## ✅ Setup Complete!
 
-Your HealthAssist is ready to run. You can now start the client and server separately using `npm run dev` in their respective folders.
+Your HealthAssist is ready to run with the new Turborepo-powered workflow!
 
 ## 🎯 How to Run
 
-### Option 1: Run Server Only
+### Option 1: Run Both (Recommended)
+```bash
+# From the root HA/ directory, starts both client and server
+pnpm dev
+```
+- **Server:** http://localhost:5000
+- **Client:** http://localhost:3000
+
+### Option 2: Run Server Only
 ```bash
 cd server
-npm run dev
+pnpm dev
 ```
 **Server will run on:** http://localhost:5000
 
-### Option 2: Run Client Only
+### Option 3: Run Client Only
 ```bash
 cd client
-npm run dev
+pnpm dev
 ```
 **Client will run on:** http://localhost:3000
-
-### Option 3: Run Both (Recommended)
-Open two terminal windows:
-
-**Terminal 1 (Backend):**
-```bash
-cd server
-npm run dev
-```
-
-**Terminal 2 (Frontend):**
-```bash
-cd client
-npm run dev
-```
 
 ## 🔧 What's Configured
 
@@ -54,22 +47,26 @@ npm run dev
 
 ## 📋 Available Commands
 
-### Server Commands
+### Root Commands (from HA/ directory)
 ```bash
-cd server
-npm run dev      # Start development server
-npm run build    # Build TypeScript
-npm run start    # Start production server
-npm run seed     # Seed database with sample data
+pnpm dev         # Start both client and server
+pnpm build       # Build both projects
+pnpm start       # Start production server
+pnpm seed        # Seed database with sample data
+pnpm lint        # Run linting on both projects
+pnpm clean       # Clean all node_modules and build artifacts
 ```
 
-### Client Commands
+### Individual Project Commands
 ```bash
-cd client
-npm run dev      # Start development server
-npm start        # Same as dev
-npm run build    # Build for production
-npm test         # Run tests
+# Server only
+cd server && pnpm dev      # Start development server
+cd server && pnpm build    # Build TypeScript
+cd server && pnpm start    # Start production server
+
+# Client only
+cd client && pnpm dev      # Start development server
+cd client && pnpm build    # Build for production
 ```
 
 ## 🗄️ Database Setup
@@ -78,8 +75,7 @@ The server is configured to connect to MongoDB at `mongodb://localhost:27017/HA`
 
 ### To seed with sample data:
 ```bash
-cd server
-npm run seed
+pnpm seed
 ```
 
 This will create sample routines and recipes for testing.
@@ -92,7 +88,7 @@ This will create sample routines and recipes for testing.
 
 ## 🎲 Test the Todo-Lottery
 
-1. Start both servers
+1. Run `pnpm dev` to start both servers
 2. Open http://localhost:3000
 3. Register a new account
 4. Go to "Routines" page
@@ -121,4 +117,10 @@ The app is configured as a Progressive Web App:
 
 ## 🎉 You're Ready!
 
-Your HealthAssist is fully configured and ready for development. The todo-lottery system, meal planning, and all core features are implemented and ready to use!
+Your HealthAssist is fully configured with Turborepo and ready for development. The todo-lottery system, meal planning, and all core features are implemented and ready to use!
+
+**New Turborepo Benefits:**
+- ⚡ Faster builds with intelligent caching
+- 🔄 Parallel task execution
+- 📦 Monorepo management
+- 🚀 Single command development (`pnpm dev`)

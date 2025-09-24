@@ -69,7 +69,7 @@ HA/
 ### Prerequisites
 - Node.js (v16 or higher)
 - MongoDB (local or MongoDB Atlas)
-- npm or yarn
+- pnpm (recommended) or npm
 
 ### Installation
 
@@ -81,13 +81,8 @@ HA/
 
 2. **Install dependencies**
    ```bash
-   # Install server dependencies
-   cd server
-   npm install
-   
-   # Install client dependencies
-   cd ../client
-   npm install
+   # Install all dependencies (client and server)
+   pnpm install
    ```
 
 3. **Set up environment variables**
@@ -105,40 +100,28 @@ HA/
 
 5. **Seed the database** (optional)
    ```bash
-   cd server
-   npm run build
-   node dist/scripts/seedDatabase.js
+   pnpm seed
    ```
 
 ### Development
 
-1. **Start the backend server**
+**Start both client and server with one command:**
    ```bash
-   cd server
-   npm run dev
+   pnpm dev
    ```
-   Server will run on http://localhost:5000
-
-2. **Start the frontend client**
-   ```bash
-   cd client
-   npm start
-   ```
-   Client will run on http://localhost:3000
+   - Server will run on http://localhost:5000
+   - Client will run on http://localhost:3000
 
 ### Production Build
 
-1. **Build the backend**
+**Build both client and server:**
    ```bash
-   cd server
-   npm run build
-   npm start
+   pnpm build
    ```
 
-2. **Build the frontend**
+**Start production server:**
    ```bash
-   cd client
-   npm run build
+   pnpm start
    ```
 
 ## API Endpoints

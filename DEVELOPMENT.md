@@ -10,37 +10,27 @@
 
 ### 2. Install Dependencies
 ```bash
-# Install server dependencies
-cd server
-npm install
-
-# Install client dependencies
-cd ../client
-npm install
+# Install all dependencies (client and server)
+pnpm install
 ```
 
 ### 3. Start Development Servers
 
-#### Option A: Run Both Servers
+#### Option A: Run Both Servers (Recommended)
 ```bash
-# Terminal 1 - Backend Server
-cd server
-npm run dev
-
-# Terminal 2 - Frontend Client
-cd client
-npm run dev
+# From the root HA/ directory, starts both client and server
+pnpm dev
 ```
 
 #### Option B: Run Individual Servers
 ```bash
 # Backend only
 cd server
-npm run dev
+pnpm dev
 
 # Frontend only
 cd client
-npm run dev
+pnpm dev
 ```
 
 ## Development URLs
@@ -67,25 +57,24 @@ npm run dev
 To populate the database with sample data:
 
 ```bash
-cd server
-npm run seed
+pnpm seed
 ```
 
 This will create sample routines and recipes for testing.
 
 ## Available Scripts
 
-### Server (`/server`)
-- `npm run dev` - Start development server with hot reload
-- `npm run build` - Build TypeScript to JavaScript
-- `npm run start` - Start production server
-- `npm run seed` - Seed database with sample data
+### Root Commands (from HA/ directory)
+- `pnpm dev` - Start both client and server in development mode
+- `pnpm build` - Build both client and server for production
+- `pnpm start` - Start production server
+- `pnpm seed` - Seed database with sample data
+- `pnpm lint` - Run linting on both projects
+- `pnpm clean` - Clean all node_modules and build artifacts
 
-### Client (`/client`)
-- `npm run dev` - Start development server (same as `npm start`)
-- `npm start` - Start development server
-- `npm run build` - Build for production
-- `npm test` - Run tests
+### Individual Project Commands
+- `cd server && pnpm dev` - Start server only
+- `cd client && pnpm dev` - Start client only
 
 ## Project Structure
 
@@ -131,8 +120,9 @@ HA/
 
 ### Development Tips
 
-- Use `npm run dev` in both client and server directories
+- Use `pnpm dev` from the root directory to start both client and server
 - The server will restart automatically on file changes
 - The client will hot-reload on file changes
 - Check browser console for frontend errors
 - Check terminal for backend errors
+- Turborepo will manage the build cache for faster subsequent builds

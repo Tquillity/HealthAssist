@@ -8,12 +8,12 @@
     "server"
   ],
   "scripts": {
-    "dev": "./start-dev.sh",
-    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
-    "build": "cd server && npm run build && cd ../client && npm run build",
-    "start": "cd server && npm start",
-    "seed": "cd server && npm run build && node dist/scripts/seedDatabase.js",
-    "clean": "rm -rf client/node_modules server/node_modules client/dist server/dist"
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "cd server && pnpm start",
+    "lint": "turbo run lint",
+    "seed": "cd server && pnpm run seed",
+    "clean": "rm -rf client/node_modules server/node_modules client/dist server/dist .turbo"
   },
   "keywords": [
     "health",
@@ -29,5 +29,9 @@
   "engines": {
     "node": ">=16.0.0",
     "npm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@10.17.1",
+  "devDependencies": {
+    "turbo": "^2.5.8"
   }
 }
