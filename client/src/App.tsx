@@ -7,6 +7,7 @@ import Routines from './pages/Routines';
 import Recipes from './pages/Recipes';
 import MealPlanner from './pages/MealPlanner';
 import Journal from './pages/Journal';
+import Educational from './pages/Educational';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
@@ -62,6 +63,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Journal />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/educational" 
+                element={
+                  <ProtectedRoute>
+                    <Educational />
                   </ProtectedRoute>
                 } 
               />

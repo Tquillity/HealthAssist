@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import Routine from '../models/Routine';
 import Recipe from '../models/Recipe';
 import User from '../models/User';
+import EducationalResource from '../models/EducationalResource';
 import bcrypt from 'bcryptjs';
 
 // Load environment variables
@@ -452,6 +453,93 @@ async function seedDatabase() {
     // Create sample recipes
     const recipes = await Recipe.insertMany(sampleRecipes);
     console.log(`Created ${recipes.length} recipes`);
+
+    // Create sample educational resources
+    const sampleEducationalResources = [
+      {
+        title: "The Complete Guide to Mindful Eating",
+        content: `
+          <h2>What is Mindful Eating?</h2>
+          <p>Mindful eating is the practice of being fully present and aware during meals. It involves paying attention to the colors, smells, flavors, and textures of your food, as well as your body's hunger and satiety cues.</p>
+          
+          <h3>Benefits of Mindful Eating</h3>
+          <ul>
+            <li>Improved digestion</li>
+            <li>Better portion control</li>
+            <li>Reduced emotional eating</li>
+            <li>Increased satisfaction with meals</li>
+            <li>Better relationship with food</li>
+          </ul>
+          
+          <h3>How to Practice Mindful Eating</h3>
+          <ol>
+            <li>Eat without distractions (no TV, phone, or computer)</li>
+            <li>Chew slowly and thoroughly</li>
+            <li>Pay attention to hunger and fullness cues</li>
+            <li>Notice the colors, smells, and textures of your food</li>
+            <li>Express gratitude for your meal</li>
+          </ol>
+        `,
+        excerpt: "Learn how to develop a healthier relationship with food through mindful eating practices that improve digestion, portion control, and overall satisfaction.",
+        category: "nutrition",
+        tags: ["mindful eating", "digestion", "portion control", "wellness"],
+        difficulty: "beginner",
+        readTime: 8,
+        author: "Dr. Sarah Johnson",
+        imageUrl: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&h=400&fit=crop",
+        featured: true
+      },
+      {
+        title: "5-Minute Morning Meditation Routine",
+        content: `
+          <h2>Start Your Day with Intention</h2>
+          <p>This simple 5-minute morning meditation routine will help you start your day with clarity, focus, and inner peace. Perfect for beginners and busy schedules.</p>
+          
+          <h3>The Routine</h3>
+          <ol>
+            <li><strong>Minute 1:</strong> Find a comfortable seated position and close your eyes</li>
+            <li><strong>Minute 2:</strong> Take 10 deep breaths, focusing on the rise and fall of your chest</li>
+            <li><strong>Minute 3:</strong> Body scan from head to toe, releasing any tension</li>
+            <li><strong>Minute 4:</strong> Set an intention for your day</li>
+            <li><strong>Minute 5:</strong> Slowly open your eyes and take three more deep breaths</li>
+          </ol>
+        `,
+        excerpt: "A simple 5-minute morning meditation routine to start your day with clarity, focus, and inner peace. Perfect for beginners.",
+        category: "meditation",
+        tags: ["meditation", "morning routine", "mindfulness", "stress relief"],
+        difficulty: "beginner",
+        readTime: 5,
+        author: "Mindful Living Institute",
+        imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop",
+        featured: true
+      },
+      {
+        title: "Understanding Your Circadian Rhythm for Better Sleep",
+        content: `
+          <h2>What is Circadian Rhythm?</h2>
+          <p>Your circadian rhythm is your body's internal 24-hour clock that regulates sleep-wake cycles, hormone production, and other physiological processes.</p>
+          
+          <h3>Tips to Align with Your Circadian Rhythm</h3>
+          <ul>
+            <li><strong>Morning Light:</strong> Get 10-30 minutes of natural sunlight within an hour of waking</li>
+            <li><strong>Consistent Sleep Schedule:</strong> Go to bed and wake up at the same time every day</li>
+            <li><strong>Evening Wind-Down:</strong> Dim lights 2-3 hours before bed</li>
+            <li><strong>Blue Light Management:</strong> Avoid screens 1 hour before bed or use blue light filters</li>
+          </ul>
+        `,
+        excerpt: "Learn how your body's internal clock affects sleep and discover practical strategies to align with your natural circadian rhythm for better rest.",
+        category: "sleep",
+        tags: ["circadian rhythm", "sleep hygiene", "melatonin", "sleep schedule"],
+        difficulty: "intermediate",
+        readTime: 12,
+        author: "Sleep Science Institute",
+        imageUrl: "https://images.unsplash.com/photo-1541781774459-1dcf1b4b0b8e?w=800&h=400&fit=crop",
+        featured: true
+      }
+    ];
+
+    const educationalResources = await EducationalResource.insertMany(sampleEducationalResources);
+    console.log(`Created ${educationalResources.length} educational resources`);
 
     // Create a sample user for testing
     const existingUser = await User.findOne({ email: 'test@example.com' });

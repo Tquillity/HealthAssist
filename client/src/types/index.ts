@@ -259,3 +259,34 @@ export interface JournalAnalytics {
     averagePerDay: number;
   };
 }
+
+// Educational Resource types
+export interface EducationalResource {
+  _id: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  category: 'nutrition' | 'exercise' | 'mental-health' | 'sleep' | 'wellness' | 'meditation' | 'stress-management' | 'hormones' | 'recipes' | 'lifestyle';
+  tags: string[];
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  readTime: number;
+  author: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  externalUrl?: string;
+  isExternal: boolean;
+  isActive: boolean;
+  featured: boolean;
+  viewCount: number;
+  likeCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EducationalResourceFilters {
+  category?: string;
+  difficulty?: string;
+  tags?: string[];
+  featured?: boolean;
+  search?: string;
+}

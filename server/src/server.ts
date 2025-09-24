@@ -10,6 +10,7 @@ import routineRoutes from './routes/routineRoutes';
 import recipeRoutes from './routes/recipeRoutes';
 import mealPlanRoutes from './routes/mealPlanRoutes';
 import journalRoutes from './routes/journalRoutes';
+import educationalRoutes from './routes/educationalRoutes';
 
 // Load environment variables
 dotenv.config();
@@ -43,6 +44,7 @@ app.use('/api/routines', routineRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/meal-plans', mealPlanRoutes);
 app.use('/api/journal', journalRoutes);
+app.use('/api/educational', educationalRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

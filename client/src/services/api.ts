@@ -87,4 +87,16 @@ export const journalAPI = {
   getAnalytics: (filters?: any) => api.get('/journal/analytics', { params: filters }),
 };
 
+// Educational Resources API
+export const educationalAPI = {
+  getAll: (filters?: any) => api.get('/educational', { params: filters }),
+  getById: (id: string) => api.get(`/educational/${id}`),
+  getFeatured: (limit?: number) => api.get('/educational/featured', { params: { limit } }),
+  getMetadata: () => api.get('/educational/meta/categories'),
+  like: (id: string) => api.post(`/educational/${id}/like`),
+  create: (data: any) => api.post('/educational', data),
+  update: (id: string, data: any) => api.put(`/educational/${id}`, data),
+  delete: (id: string) => api.delete(`/educational/${id}`),
+};
+
 export default api;
