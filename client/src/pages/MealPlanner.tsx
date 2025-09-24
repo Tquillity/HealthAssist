@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { mealPlansAPI } from '../services/api';
 import { MealPlan } from '../types';
+import { useAuth } from '../store/AuthContext';
 import MealPlanCalendar from '../components/MealPlanCalendar';
 import MealPlanForm from '../components/MealPlanForm';
 import GroceryList from '../components/GroceryList';
 
 const MealPlanner: React.FC = () => {
+  const { state } = useAuth();
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
   const [currentMealPlan, setCurrentMealPlan] = useState<MealPlan | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,8 +43,11 @@ const MealPlanner: React.FC = () => {
   // };
 
   useEffect(() => {
-    fetchMealPlans();
-  }, []);
+    // Only fetch data if user is authenticated
+    if (state.isAuthenticated && state.user) {
+      fetchMealPlans();
+    }
+  }, [state.isAuthenticated, state.user]);
 
   const handleGenerateMealPlan = async (preferences: any) => {
     try {

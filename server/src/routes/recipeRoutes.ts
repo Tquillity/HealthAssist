@@ -1,6 +1,15 @@
 import express from 'express';
 import Recipe from '../models/Recipe';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
+import upload from '../middleware/upload';
+
+// Admin-only middleware
+const requireAdmin = (req: AuthRequest, res: any, next: any) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  next();
+};
 
 const router = express.Router();
 
@@ -52,8 +61,28 @@ router.get('/:id', authenticateToken, async (req: AuthRequest, res) => {
   }
 });
 
-// Create new recipe
-router.post('/', authenticateToken, async (req: AuthRequest, res) => {
+// Upload recipe image (Admin only)
+router.post('/upload-image', authenticateToken, requireAdmin, upload.single('image'), async (req: AuthRequest, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image file provided' });
+    }
+
+    // Return the file path for the frontend to use
+    const imageUrl = `/uploads/${req.file.filename}`;
+    res.json({
+      message: 'Image uploaded successfully',
+      imageUrl: imageUrl,
+      filename: req.file.filename
+    });
+  } catch (error) {
+    console.error('Image upload error:', error);
+    res.status(500).json({ message: 'Server error uploading image' });
+  }
+});
+
+// Create new recipe (Admin only)
+router.post('/', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
     const recipeData = {
       ...req.body,
@@ -74,8 +103,8 @@ router.post('/', authenticateToken, async (req: AuthRequest, res) => {
   }
 });
 
-// Update recipe
-router.put('/:id', authenticateToken, async (req: AuthRequest, res) => {
+// Update recipe (Admin only)
+router.put('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
     const recipe = await Recipe.findOneAndUpdate(
       { 
@@ -100,8 +129,8 @@ router.put('/:id', authenticateToken, async (req: AuthRequest, res) => {
   }
 });
 
-// Delete recipe
-router.delete('/:id', authenticateToken, async (req: AuthRequest, res) => {
+// Delete recipe (Admin only)
+router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
     const recipe = await Recipe.findOneAndDelete({
       _id: req.params.id,

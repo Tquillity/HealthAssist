@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email: string;
   password?: string; // Optional for OAuth users
   householdId: string;
+  role: 'admin' | 'user'; // Admin or regular user
   googleId?: string; // Google OAuth ID
   xId?: string; // X (Twitter) OAuth ID
   preferences: {
@@ -62,6 +63,11 @@ const UserSchema = new Schema<IUser>({
   householdId: {
     type: String,
     required: true
+  },
+  role: {
+    type: String,
+    enum: ['admin', 'user'],
+    default: 'user'
   },
   preferences: {
     energy: {

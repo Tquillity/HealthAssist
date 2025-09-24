@@ -105,7 +105,10 @@ const JournalEntrySchema = new Schema<IJournalEntry>({
       type: Number,
       min: 0
     },
-    type: String,
+    type: {
+      type: String,
+      default: ''
+    },
     intensity: {
       type: Number,
       min: 1,

@@ -1,29 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { journalAPI } from '../services/api';
 import { JournalEntry, JournalAnalytics as AnalyticsType } from '../types';
+import { useAuth } from '../store/AuthContext';
 import JournalForm from '../components/JournalForm';
 import JournalCalendar from '../components/JournalCalendar';
 import JournalAnalytics from '../components/JournalAnalytics';
 import JournalEntryDetail from '../components/JournalEntryDetail';
 
 const Journal: React.FC = () => {
+  const { state } = useAuth();
   const [entries, setEntries] = useState<JournalEntry[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    // Get today's date in local timezone
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [analytics, setAnalytics] = useState<AnalyticsType | null>(null);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'calendar' | 'form' | 'analytics'>('calendar');
-
-  useEffect(() => {
-    fetchEntries();
-    fetchAnalytics();
-  }, []);
-
-  useEffect(() => {
-    if (selectedDate) {
-      fetchEntryByDate(selectedDate);
-    }
-  }, [selectedDate]);
 
   const fetchEntries = async () => {
     try {
@@ -37,7 +35,7 @@ const Journal: React.FC = () => {
     }
   };
 
-  const fetchEntryByDate = async (date: string) => {
+  const fetchEntryByDate = useCallback(async (date: string) => {
     try {
       const response = await journalAPI.getByDate(date);
       setSelectedEntry(response.data);
@@ -46,9 +44,28 @@ const Journal: React.FC = () => {
         setSelectedEntry(null);
       } else {
         console.error('Error fetching journal entry:', error);
+        // Don't show error for 404s as they're expected for new entries
+        if (error.response?.status !== 404) {
+          console.error('Unexpected error fetching journal entry:', error.response?.data || error.message);
+        }
       }
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    // Only fetch data if user is authenticated and not loading
+    if (state.isAuthenticated && state.user && !state.loading) {
+      fetchEntries();
+      fetchAnalytics();
+    }
+  }, [state.isAuthenticated, state.user, state.loading]);
+
+  useEffect(() => {
+    // Only fetch entry if user is authenticated, not loading, and date is selected
+    if (state.isAuthenticated && state.user && !state.loading && selectedDate) {
+      fetchEntryByDate(selectedDate);
+    }
+  }, [selectedDate, state.isAuthenticated, state.user, state.loading, fetchEntryByDate]);
 
   const fetchAnalytics = async () => {
     try {
@@ -75,8 +92,11 @@ const Journal: React.FC = () => {
       setSelectedEntry(response.data);
       await fetchEntries();
       await fetchAnalytics();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving journal entry:', error);
+      console.error('Error details:', error.response?.data || error.message);
+      // You could add a toast notification here to show the error to the user
+      alert('Failed to save journal entry. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -115,10 +135,27 @@ const Journal: React.FC = () => {
   };
 
   const handleNewEntry = () => {
-    setSelectedDate(new Date().toISOString().split('T')[0]);
+    // Get today's date in local timezone
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    setSelectedDate(`${year}-${month}-${day}`);
     setSelectedEntry(null);
     setActiveTab('form');
   };
+
+  // Show loading if not authenticated yet or still loading
+  if (state.loading || !state.isAuthenticated || !state.user) {
+    return (
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading journal...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-50">

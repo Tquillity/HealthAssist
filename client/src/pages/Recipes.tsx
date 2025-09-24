@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { recipesAPI } from '../services/api';
 import { Recipe } from '../types';
+import { useAuth } from '../store/AuthContext';
 import RecipeCard from '../components/RecipeCard';
 import RecipeFiltersComponent from '../components/RecipeFilters';
 import RecipeForm from '../components/RecipeForm';
@@ -15,6 +16,7 @@ interface RecipeFilters {
 }
 
 const Recipes: React.FC = () => {
+  const { state } = useAuth();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +26,8 @@ const Recipes: React.FC = () => {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
   const [formLoading, setFormLoading] = useState(false);
+
+  const isAdmin = state.user?.role === 'admin';
 
   const fetchRecipes = async () => {
     try {
@@ -183,13 +187,23 @@ const Recipes: React.FC = () => {
             <p className="text-gray-600">
               Discover and manage your healthy recipes
             </p>
+            {!isAdmin && (
+              <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  <span className="font-medium">Note:</span> Only admin users can add, edit, or delete recipes. 
+                  Contact your administrator to add new recipes to the database.
+                </p>
+              </div>
+            )}
           </div>
-          <button
-            onClick={() => setShowForm(true)}
-            className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
-          >
-            Add Recipe
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => setShowForm(true)}
+              className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
+            >
+              Add Recipe
+            </button>
+          )}
         </div>
       </div>
 
@@ -233,9 +247,9 @@ const Recipes: React.FC = () => {
               key={recipe._id}
               recipe={recipe}
               onClick={() => handleRecipeClick(recipe)}
-              onEdit={() => handleEditRecipe(recipe)}
-              onDelete={() => handleDeleteRecipe(recipe)}
-              showActions={true}
+              onEdit={isAdmin ? () => handleEditRecipe(recipe) : undefined}
+              onDelete={isAdmin ? () => handleDeleteRecipe(recipe) : undefined}
+              showActions={isAdmin}
             />
           ))}
         </div>

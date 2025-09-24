@@ -48,20 +48,24 @@ self.addEventListener('fetch', (event) => {
   // Handle API requests
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(
-      caches.open(DYNAMIC_CACHE).then((cache) => {
-        return fetch(request)
-          .then((response) => {
-            // Cache successful API responses
-            if (response.status === 200) {
-              cache.put(request, response.clone());
-            }
-            return response;
-          })
-          .catch(() => {
-            // Return cached version if network fails
-            return cache.match(request);
-          });
-      })
+      fetch(request)
+        .then(networkResponse => {
+          // For GET requests, update the cache
+          if (request.method === 'GET' && networkResponse.ok) {
+            caches.open(DYNAMIC_CACHE).then(cache => {
+              // Clone the response to use it in both cache and browser
+              cache.put(request, networkResponse.clone());
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          // If network fails, only serve from cache for GET requests
+          if (request.method === 'GET') {
+            return caches.match(request);
+          }
+          return new Response('Network error', { status: 503 });
+        })
     );
     return;
   }

@@ -550,6 +550,7 @@ async function seedDatabase() {
         email: 'test@example.com',
         password: hashedPassword,
         householdId: 'sample_household',
+        role: 'user',
         profile: {
           firstName: 'Test',
           lastName: 'User',
@@ -567,10 +568,40 @@ async function seedDatabase() {
       console.log('Created sample user: test@example.com / password123');
     }
 
+    // Create an admin user
+    const existingAdmin = await User.findOne({ email: 'admin@healthhub.com' });
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash('admin123', 12);
+      const adminUser = new User({
+        username: 'admin',
+        email: 'admin@healthhub.com',
+        password: hashedPassword,
+        householdId: 'admin_household',
+        role: 'admin',
+        profile: {
+          firstName: 'Admin',
+          lastName: 'User',
+          timezone: 'UTC'
+        },
+        preferences: {
+          energy: 'high',
+          preferredContext: 'anytime',
+          routineDuration: '30min',
+          dietaryRestrictions: [],
+          healthGoals: ['energy', 'sleep', 'fitness']
+        }
+      });
+      await adminUser.save();
+      console.log('Created admin user: admin@healthhub.com / admin123');
+    }
+
     console.log('Database seeding completed successfully!');
     console.log('\nSample user credentials:');
     console.log('Email: test@example.com');
     console.log('Password: password123');
+    console.log('\nAdmin user credentials:');
+    console.log('Email: admin@healthhub.com');
+    console.log('Password: admin123');
     
   } catch (error) {
     console.error('Error seeding database:', error);

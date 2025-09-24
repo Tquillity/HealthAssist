@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { startDate, endDate, limit = 30, page = 1 } = req.query;
-    const userId = (req as any).user.id;
+    const userId = (req as any).user._id;
 
     const query: any = { userId };
     
@@ -47,14 +47,20 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
 // Get journal entry by date
 router.get('/date/:date', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.id;
-    const date = new Date(req.params.date);
+    const userId = (req as any).user._id;
+    const dateString = req.params.date; // e.g., "2025-09-24"
+    
+    // Parse the date string and create UTC date objects to avoid timezone issues
+    const [year, month, day] = dateString.split('-').map(Number);
+    const startOfDay = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+    const endOfDay = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
+    
     
     const entry = await JournalEntry.findOne({
       userId,
       date: {
-        $gte: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
-        $lt: new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1)
+        $gte: startOfDay,
+        $lte: endOfDay
       }
     });
 
@@ -72,17 +78,24 @@ router.get('/date/:date', authenticateToken, async (req: Request, res: Response)
 // Create or update journal entry
 router.post('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = (req as any).user._id;
     const { date, ...entryData } = req.body;
 
-    const entryDate = new Date(date);
+    // Parse the date string and create UTC date objects to avoid timezone issues
+    const [year, month, day] = date.split('-').map(Number);
+    // Create UTC dates to avoid timezone conversion issues
+    const entryDate = new Date(Date.UTC(year, month - 1, day, 12, 0, 0, 0)); // Use noon UTC to avoid DST issues
     
-    // Find existing entry for this date
+    // Create date range for the full day in UTC
+    const startOfDay = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+    const endOfDay = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
+    
+    
     const existingEntry = await JournalEntry.findOne({
       userId,
       date: {
-        $gte: new Date(entryDate.getFullYear(), entryDate.getMonth(), entryDate.getDate()),
-        $lt: new Date(entryDate.getFullYear(), entryDate.getMonth(), entryDate.getDate() + 1)
+        $gte: startOfDay,
+        $lte: endOfDay
       }
     });
 
@@ -107,14 +120,18 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
     res.status(201).json(entry);
   } catch (error) {
     console.error('Error creating/updating journal entry:', error);
-    res.status(500).json({ error: 'Failed to create/update journal entry' });
+    console.error('Error details:', error);
+    res.status(500).json({ 
+      error: 'Failed to create/update journal entry',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 });
 
 // Update journal entry
 router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = (req as any).user._id;
     const entryId = req.params.id;
     const updateData = req.body;
 
@@ -138,7 +155,7 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
 // Delete journal entry
 router.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = (req as any).user._id;
     const entryId = req.params.id;
 
     const entry = await JournalEntry.findOneAndDelete({ _id: entryId, userId });
@@ -157,7 +174,7 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
 // Get journal analytics
 router.get('/analytics', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = (req as any).user._id;
     const { startDate, endDate } = req.query;
 
     const query: any = { userId };

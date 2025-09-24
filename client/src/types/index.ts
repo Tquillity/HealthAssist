@@ -4,6 +4,7 @@ export interface User {
   username: string;
   email: string;
   householdId: string;
+  role: 'admin' | 'user';
   profile: {
     firstName: string;
     lastName: string;

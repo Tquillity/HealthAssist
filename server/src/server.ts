@@ -24,12 +24,37 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
+const allowedOrigins = [
+  process.env.CLIENT_URL || 'http://localhost:3000',
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:3002',
+  'http://localhost:3003'
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // For development, allow any localhost port
+    if (process.env.NODE_ENV === 'development' && origin.includes('localhost')) {
+      return callback(null, true);
+    }
+    
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Session configuration for OAuth
 app.use(session({

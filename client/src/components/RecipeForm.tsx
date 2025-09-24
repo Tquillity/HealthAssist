@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Recipe, Ingredient } from '../types';
+import { recipesAPI } from '../services/api';
 
 interface RecipeFormProps {
   recipe?: Recipe;
@@ -38,6 +39,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ recipe, onSubmit, onCancel, loa
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>(recipe?.imageUrl || '');
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const categories = ['breakfast', 'lunch', 'dinner', 'snack', 'dessert', 'beverage'];
   const difficulties = ['easy', 'medium', 'hard'];
@@ -127,6 +131,37 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ recipe, onSubmit, onCancel, loa
     });
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageUpload = async () => {
+    if (!imageFile) return;
+
+    try {
+      setUploadingImage(true);
+      const formData = new FormData();
+      formData.append('image', imageFile);
+
+      const response = await recipesAPI.uploadImage(formData);
+      setFormData(prev => ({ ...prev, imageUrl: response.data.imageUrl }));
+      setImageFile(null);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Failed to upload image. Please try again.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -152,17 +187,57 @@ const RecipeForm: React.FC<RecipeFormProps> = ({ recipe, onSubmit, onCancel, loa
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Image URL *
+                Recipe Image *
               </label>
-              <input
-                type="url"
-                value={formData.imageUrl}
-                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.imageUrl ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="https://example.com/image.jpg"
-              />
+              
+              {/* Image Preview */}
+              {imagePreview && (
+                <div className="mb-4">
+                  <img
+                    src={imagePreview}
+                    alt="Recipe preview"
+                    className="w-32 h-32 object-cover rounded-lg border border-gray-300"
+                  />
+                </div>
+              )}
+
+              {/* File Upload */}
+              <div className="space-y-3">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
+                
+                {imageFile && (
+                  <button
+                    type="button"
+                    onClick={handleImageUpload}
+                    disabled={uploadingImage}
+                    className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                  </button>
+                )}
+
+                {/* Manual URL Input (fallback) */}
+                <div className="border-t pt-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Or enter image URL manually:
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+                      errors.imageUrl ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+              </div>
+              
               {errors.imageUrl && <p className="mt-1 text-sm text-red-600">{errors.imageUrl}</p>}
             </div>
           </div>

@@ -65,6 +65,11 @@ export const recipesAPI = {
   update: (id: string, data: any) => api.put(`/recipes/${id}`, data),
   delete: (id: string) => api.delete(`/recipes/${id}`),
   getMetadata: () => api.get('/recipes/meta/categories'),
+  uploadImage: (formData: FormData) => api.post('/recipes/upload-image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }),
 };
 
 // Meal Plans API
