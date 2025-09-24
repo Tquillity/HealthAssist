@@ -1,4 +1,4 @@
-# Health and Wellness Hub
+# HealthAssist
 
 A comprehensive Progressive Web App (PWA) designed as a centralized health and food database for personalized wellness management. This application consolidates best practices across nutrition, sleep hygiene, meditation, exercise, and other health domains.
 

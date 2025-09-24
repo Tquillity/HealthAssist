@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Health and Wellness Hub - Development Startup Script
+# HealthAssist - Development Startup Script
 
-echo "🏥 Starting Health and Wellness Hub Development Environment"
+echo "🏥 Starting HealthAssist Development Environment"
 echo "=========================================================="
 
 # Check if Node.js is installed
@@ -66,7 +66,7 @@ sleep 3
 # Start frontend
 echo "Starting frontend client on http://localhost:3000"
 cd ../client
-npm start &
+npm run dev &
 FRONTEND_PID=$!
 
 echo ""

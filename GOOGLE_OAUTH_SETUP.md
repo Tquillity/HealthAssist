@@ -1,6 +1,6 @@
 # Google OAuth Setup Guide
 
-This guide will help you set up Google OAuth authentication for the Health & Wellness Hub application.
+This guide will help you set up Google OAuth authentication for the HealthAssist application.
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ This guide will help you set up Google OAuth authentication for the Health & Wel
 1. Navigate to **APIs & Services** > **OAuth consent screen**
 2. Choose **External** user type (unless you have a Google Workspace)
 3. Fill in the required information:
-   - **App name**: Health & Wellness Hub
+   - **App name**: HealthAssist
    - **User support email**: Your email
    - **Developer contact information**: Your email
 4. Add scopes:
@@ -32,7 +32,7 @@ This guide will help you set up Google OAuth authentication for the Health & Wel
 2. Click **Create Credentials** > **OAuth 2.0 Client IDs**
 3. Choose **Web application**
 4. Configure the application:
-   - **Name**: Health & Wellness Hub
+   - **Name**: HealthAssist
    - **Authorized JavaScript origins**: 
      - `http://localhost:3000` (for development)
      - Your production domain (for production)

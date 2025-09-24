@@ -1,7 +1,7 @@
 {
   "name": "HA",
   "version": "1.0.0",
-  "description": "Personalized Health and Wellness Hub - A comprehensive PWA for health management",
+  "description": "HealthAssist - A comprehensive PWA for health management",
   "private": true,
   "workspaces": [
     "client",

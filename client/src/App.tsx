@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './store/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -16,6 +16,8 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import OfflineIndicator from './components/OfflineIndicator';
+import HeartbeatStatus from './components/HeartbeatStatus';
+import heartbeatService from './services/heartbeatService';
 
 const AppContent: React.FC = () => {
   const location = useLocation();
@@ -91,11 +93,28 @@ const AppContent: React.FC = () => {
       {!isAuthPage && <Footer />}
       <PWAInstallPrompt />
       <OfflineIndicator />
+      <HeartbeatStatus />
     </div>
   );
 };
 
 function App() {
+  useEffect(() => {
+    // Start heartbeat service when app loads
+    console.log('🚀 Starting HealthAssist...');
+    
+    // Small delay to prevent multiple rapid starts during development
+    const timeoutId = setTimeout(() => {
+      heartbeatService.start();
+    }, 100);
+
+    // Cleanup on unmount
+    return () => {
+      clearTimeout(timeoutId);
+      heartbeatService.stop();
+    };
+  }, []);
+
   return (
     <AuthProvider>
       <Router>

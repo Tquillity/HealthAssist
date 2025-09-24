@@ -2,7 +2,7 @@
 
 ## ✅ Setup Complete!
 
-Your Health and Wellness Hub is ready to run. You can now start the client and server separately using `npm run dev` in their respective folders.
+Your HealthAssist is ready to run. You can now start the client and server separately using `npm run dev` in their respective folders.
 
 ## 🎯 How to Run
 
@@ -121,4 +121,4 @@ The app is configured as a Progressive Web App:
 
 ## 🎉 You're Ready!
 
-Your Health and Wellness Hub is fully configured and ready for development. The todo-lottery system, meal planning, and all core features are implemented and ready to use!
+Your HealthAssist is fully configured and ready for development. The todo-lottery system, meal planning, and all core features are implemented and ready to use!

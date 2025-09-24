@@ -1,6 +1,6 @@
 # X (Twitter) OAuth Setup Guide
 
-This guide will help you set up X (Twitter) OAuth authentication for your Health & Wellness Hub application.
+This guide will help you set up X (Twitter) OAuth authentication for your HealthAssist application.
 
 ## Prerequisites
 
@@ -20,7 +20,7 @@ This guide will help you set up X (Twitter) OAuth authentication for your Health
 1. In the X Developer Portal, go to "Projects & Apps"
 2. Click "Create App" or "New Project"
 3. Fill in the required information:
-   - **App Name**: Health & Wellness Hub
+   - **App Name**: HealthAssist
    - **App Description**: Health and wellness tracking application
    - **Website URL**: `http://localhost:3000` (for development)
    - **Callback URL**: `http://localhost:5000/api/auth/x/callback`
