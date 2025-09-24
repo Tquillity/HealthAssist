@@ -10,6 +10,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
+import OfflineIndicator from './components/OfflineIndicator';
 
 function App() {
   return (
@@ -55,7 +57,7 @@ function App() {
                 } 
               />
               <Route 
-                path="/profile" 
+                path="/profile"
                 element={
                   <ProtectedRoute>
                     <Profile />
@@ -64,6 +66,8 @@ function App() {
               />
             </Routes>
           </main>
+          <PWAInstallPrompt />
+          <OfflineIndicator />
         </div>
       </Router>
     </AuthProvider>
