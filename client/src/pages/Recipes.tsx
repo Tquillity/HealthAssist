@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { recipesAPI } from '../services/api';
 import { Recipe } from '../types';
 import { useAuth } from '../store/AuthContext';
@@ -17,31 +18,28 @@ interface RecipeFilters {
 
 const Recipes: React.FC = () => {
   const { state } = useAuth();
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [filters, setFilters] = useState<RecipeFilters>({});
   const [showForm, setShowForm] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
-  const [formLoading, setFormLoading] = useState(false);
 
   const isAdmin = state.user?.role === 'admin';
 
-  const fetchRecipes = async () => {
-    try {
-      setLoading(true);
-      const response = await recipesAPI.getAll();
-      setRecipes(response.data);
-    } catch (error) {
-      console.error('Error fetching recipes:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Fetch recipes with React Query
+  const { 
+    data: recipes = [], 
+    isLoading, 
+    isError, 
+    error 
+  } = useQuery<Recipe[]>({
+    queryKey: ['recipes'],
+    queryFn: () => recipesAPI.getAll(),
+  });
 
-  const applyFilters = useCallback(() => {
+  // Filter recipes using useMemo for performance
+  const filteredRecipes = useMemo(() => {
     let filtered = [...recipes];
 
     if (filters.category) {
@@ -70,16 +68,49 @@ const Recipes: React.FC = () => {
       );
     }
 
-    setFilteredRecipes(filtered);
+    return filtered;
   }, [recipes, filters]);
 
-  useEffect(() => {
-    fetchRecipes();
-  }, []);
+  // Mutations for CRUD operations
+  const deleteRecipeMutation = useMutation({
+    mutationFn: (id: string) => recipesAPI.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recipes'] });
+      setShowDetail(false);
+      setSelectedRecipe(null);
+    },
+    onError: (error) => {
+      console.error('Error deleting recipe:', error);
+      alert('Failed to delete recipe. Please try again.');
+    },
+  });
 
-  useEffect(() => {
-    applyFilters();
-  }, [applyFilters]);
+  const createRecipeMutation = useMutation({
+    mutationFn: (data: Partial<Recipe>) => recipesAPI.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recipes'] });
+      setShowForm(false);
+      setEditingRecipe(null);
+    },
+    onError: (error) => {
+      console.error('Error creating recipe:', error);
+      alert('Failed to create recipe. Please try again.');
+    },
+  });
+
+  const updateRecipeMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<Recipe> }) => 
+      recipesAPI.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['recipes'] });
+      setShowForm(false);
+      setEditingRecipe(null);
+    },
+    onError: (error) => {
+      console.error('Error updating recipe:', error);
+      alert('Failed to update recipe. Please try again.');
+    },
+  });
 
   const handleFilterChange = (newFilters: RecipeFilters) => {
     setFilters(newFilters);
@@ -100,36 +131,17 @@ const Recipes: React.FC = () => {
     setShowDetail(false);
   };
 
-  const handleDeleteRecipe = async (recipe: Recipe) => {
+  const handleDeleteRecipe = (recipe: Recipe) => {
     if (window.confirm('Are you sure you want to delete this recipe?')) {
-      try {
-        await recipesAPI.delete(recipe._id);
-        await fetchRecipes();
-        setShowDetail(false);
-        setSelectedRecipe(null);
-      } catch (error) {
-        console.error('Error deleting recipe:', error);
-        alert('Failed to delete recipe. Please try again.');
-      }
+      deleteRecipeMutation.mutate(recipe._id);
     }
   };
 
   const handleFormSubmit = async (recipeData: Partial<Recipe>) => {
-    try {
-      setFormLoading(true);
-      if (editingRecipe) {
-        await recipesAPI.update(editingRecipe._id, recipeData);
-      } else {
-        await recipesAPI.create(recipeData);
-      }
-      await fetchRecipes();
-      setShowForm(false);
-      setEditingRecipe(null);
-    } catch (error) {
-      console.error('Error saving recipe:', error);
-      alert('Failed to save recipe. Please try again.');
-    } finally {
-      setFormLoading(false);
+    if (editingRecipe) {
+      updateRecipeMutation.mutate({ id: editingRecipe._id, data: recipeData });
+    } else {
+      createRecipeMutation.mutate(recipeData);
     }
   };
 
@@ -158,7 +170,7 @@ const Recipes: React.FC = () => {
           recipe={editingRecipe || undefined}
           onSubmit={handleFormSubmit}
           onCancel={handleFormCancel}
-          loading={formLoading}
+          loading={createRecipeMutation.isPending || updateRecipeMutation.isPending}
         />
       </div>
     );
@@ -232,13 +244,27 @@ const Recipes: React.FC = () => {
       </div>
 
       {/* Recipes Grid */}
-      {loading ? (
+      {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="animate-pulse">
               <div className="bg-gray-200 h-64 rounded-lg"></div>
             </div>
           ))}
+        </div>
+      ) : isError ? (
+        <div className="text-center py-12">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">Error loading recipes</h3>
+          <p className="text-gray-600 mb-6">
+            {error?.message || 'Something went wrong while loading recipes. Please try again.'}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+          >
+            Retry
+          </button>
         </div>
       ) : filteredRecipes.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

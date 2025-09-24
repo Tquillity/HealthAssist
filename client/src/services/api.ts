@@ -64,17 +64,17 @@ export const routinesAPI = {
 
 // Recipes API
 export const recipesAPI = {
-  getAll: (filters?: any) => api.get('/recipes', { params: filters }),
-  getById: (id: string) => api.get(`/recipes/${id}`),
-  create: (data: any) => api.post('/recipes', data),
-  update: (id: string, data: any) => api.put(`/recipes/${id}`, data),
-  delete: (id: string) => api.delete(`/recipes/${id}`),
-  getMetadata: () => api.get('/recipes/meta/categories'),
+  getAll: (filters?: any) => api.get('/recipes', { params: filters }).then(res => res.data),
+  getById: (id: string) => api.get(`/recipes/${id}`).then(res => res.data),
+  create: (data: any) => api.post('/recipes', data).then(res => res.data),
+  update: (id: string, data: any) => api.put(`/recipes/${id}`, data).then(res => res.data),
+  delete: (id: string) => api.delete(`/recipes/${id}`).then(res => res.data),
+  getMetadata: () => api.get('/recipes/meta/categories').then(res => res.data),
   uploadImage: (formData: FormData) => api.post('/recipes/upload-image', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
-  }),
+  }).then(res => res.data),
 };
 
 // Meal Plans API
