@@ -2,10 +2,19 @@ import React from 'react';
 import { JournalAnalytics as Analytics } from '../types';
 
 interface JournalAnalyticsProps {
-  analytics: Analytics;
+  analytics: Analytics | null;
 }
 
 const JournalAnalytics: React.FC<JournalAnalyticsProps> = ({ analytics }) => {
+  // Early return if analytics is incomplete
+  if (!analytics || !analytics.mood || !analytics.energy || !analytics.sleep || !analytics.exercise || !analytics.stress || !analytics.gratitude) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500">Loading analytics data...</p>
+      </div>
+    );
+  }
+
   const getTrendIcon = (trend: number) => {
     if (trend > 0) return '📈';
     if (trend < 0) return '📉';
@@ -230,7 +239,7 @@ const JournalAnalytics: React.FC<JournalAnalyticsProps> = ({ analytics }) => {
                 {analytics.stress.average.toFixed(1)}/10
               </span>
             </div>
-            {Object.keys(analytics.stress.commonSources).length > 0 && (
+            {analytics.stress?.commonSources && Object.keys(analytics.stress.commonSources).length > 0 && (
               <div>
                 <p className="text-sm font-medium text-gray-700 mb-2">Common Stress Sources</p>
                 <div className="space-y-2">

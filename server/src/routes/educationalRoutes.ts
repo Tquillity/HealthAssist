@@ -1,6 +1,6 @@
 import express from 'express';
 import { Request, Response } from 'express';
-import EducationalResource from '../models/EducationalResource';
+import * as educationalService from '../services/educationalService';
 import { authenticateToken } from '../middleware/auth';
 
 const router = express.Router();
@@ -8,67 +8,18 @@ const router = express.Router();
 // Get all educational resources (public)
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const { 
-      category, 
-      difficulty, 
-      tags, 
-      featured, 
-      search,
-      limit = 20, 
-      page = 1,
-      sortBy = 'createdAt',
-      sortOrder = 'desc'
-    } = req.query;
-
-    const query: any = { isActive: true };
+    const filters = {
+      category: req.query.category as string,
+      difficulty: req.query.difficulty as string,
+      tags: Array.isArray(req.query.tags) ? req.query.tags as string[] : req.query.tags as string,
+      featured: req.query.featured as string,
+      search: req.query.search as string,
+      limit: parseInt(req.query.limit as string) || 20,
+      page: parseInt(req.query.page as string) || 1
+    };
     
-    if (category) {
-      query.category = category;
-    }
-    
-    if (difficulty) {
-      query.difficulty = difficulty;
-    }
-    
-    if (tags) {
-      const tagArray = Array.isArray(tags) ? tags : [tags];
-      query.tags = { $in: tagArray };
-    }
-    
-    if (featured === 'true') {
-      query.featured = true;
-    }
-    
-    if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { excerpt: { $regex: search, $options: 'i' } },
-        { content: { $regex: search, $options: 'i' } },
-        { tags: { $in: [new RegExp(search as string, 'i')] } }
-      ];
-    }
-
-    const skip = (Number(page) - 1) * Number(limit);
-    const sort: any = {};
-    sort[sortBy as string] = sortOrder === 'desc' ? -1 : 1;
-    
-    const resources = await EducationalResource.find(query)
-      .select('-content') // Exclude full content for list view
-      .sort(sort)
-      .limit(Number(limit))
-      .skip(skip);
-
-    const total = await EducationalResource.countDocuments(query);
-
-    res.json({
-      resources,
-      pagination: {
-        page: Number(page),
-        limit: Number(limit),
-        total,
-        pages: Math.ceil(total / Number(limit))
-      }
-    });
+    const result = await educationalService.getEducationalResources(filters);
+    res.json(result);
   } catch (error) {
     console.error('Error fetching educational resources:', error);
     res.status(500).json({ error: 'Failed to fetch educational resources' });
@@ -78,16 +29,8 @@ router.get('/', async (req: Request, res: Response) => {
 // Get featured resources
 router.get('/featured', async (req: Request, res: Response) => {
   try {
-    const { limit = 6 } = req.query;
-    
-    const resources = await EducationalResource.find({ 
-      isActive: true, 
-      featured: true 
-    })
-    .select('-content')
-    .sort({ createdAt: -1 })
-    .limit(Number(limit));
-
+    const limit = parseInt(req.query.limit as string) || 6;
+    const resources = await educationalService.getFeaturedEducationalResources(limit);
     res.json(resources);
   } catch (error) {
     console.error('Error fetching featured resources:', error);
@@ -98,20 +41,13 @@ router.get('/featured', async (req: Request, res: Response) => {
 // Get resource by ID
 router.get('/:id', async (req: Request, res: Response) => {
   try {
-    const resource = await EducationalResource.findById(req.params.id);
-    
-    if (!resource || !resource.isActive) {
-      return res.status(404).json({ error: 'Educational resource not found' });
-    }
-
-    // Increment view count
-    await EducationalResource.findByIdAndUpdate(req.params.id, {
-      $inc: { viewCount: 1 }
-    });
-
+    const resource = await educationalService.getEducationalResourceById(req.params.id);
     res.json(resource);
   } catch (error) {
     console.error('Error fetching educational resource:', error);
+    if (error instanceof Error && error.message === 'Educational resource not found') {
+      return res.status(404).json({ error: 'Educational resource not found' });
+    }
     res.status(500).json({ error: 'Failed to fetch educational resource' });
   }
 });
@@ -119,15 +55,8 @@ router.get('/:id', async (req: Request, res: Response) => {
 // Get categories and metadata
 router.get('/meta/categories', async (req: Request, res: Response) => {
   try {
-    const categories = await EducationalResource.distinct('category', { isActive: true });
-    const difficulties = await EducationalResource.distinct('difficulty', { isActive: true });
-    const allTags = await EducationalResource.distinct('tags', { isActive: true });
-    
-    res.json({
-      categories,
-      difficulties,
-      tags: allTags.filter(tag => tag && tag.trim().length > 0)
-    });
+    const metadata = await educationalService.getEducationalResourceMetadata();
+    res.json(metadata);
   } catch (error) {
     console.error('Error fetching metadata:', error);
     res.status(500).json({ error: 'Failed to fetch metadata' });
@@ -137,22 +66,16 @@ router.get('/meta/categories', async (req: Request, res: Response) => {
 // Like a resource (authenticated)
 router.post('/:id/like', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const resource = await EducationalResource.findByIdAndUpdate(
-      req.params.id,
-      { $inc: { likeCount: 1 } },
-      { new: true }
-    );
-
-    if (!resource) {
-      return res.status(404).json({ error: 'Educational resource not found' });
-    }
-
+    const result = await educationalService.likeEducationalResource(req.params.id);
     res.json({ 
       message: 'Resource liked successfully',
-      likeCount: resource.likeCount 
+      likeCount: result.likeCount 
     });
   } catch (error) {
     console.error('Error liking resource:', error);
+    if (error instanceof Error && error.message === 'Educational resource not found') {
+      return res.status(404).json({ error: 'Educational resource not found' });
+    }
     res.status(500).json({ error: 'Failed to like resource' });
   }
 });
@@ -165,9 +88,7 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
       author: (req as any).user.username || 'Admin'
     };
 
-    const resource = new EducationalResource(resourceData);
-    await resource.save();
-
+    const resource = await educationalService.createEducationalResource(resourceData);
     res.status(201).json(resource);
   } catch (error) {
     console.error('Error creating educational resource:', error);
@@ -178,19 +99,13 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
 // Update educational resource (admin only)
 router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const resource = await EducationalResource.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-
-    if (!resource) {
-      return res.status(404).json({ error: 'Educational resource not found' });
-    }
-
+    const resource = await educationalService.updateEducationalResource(req.params.id, req.body);
     res.json(resource);
   } catch (error) {
     console.error('Error updating educational resource:', error);
+    if (error instanceof Error && error.message === 'Educational resource not found') {
+      return res.status(404).json({ error: 'Educational resource not found' });
+    }
     res.status(500).json({ error: 'Failed to update educational resource' });
   }
 });
@@ -198,19 +113,13 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
 // Delete educational resource (admin only)
 router.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const resource = await EducationalResource.findByIdAndUpdate(
-      req.params.id,
-      { isActive: false },
-      { new: true }
-    );
-
-    if (!resource) {
-      return res.status(404).json({ error: 'Educational resource not found' });
-    }
-
-    res.json({ message: 'Educational resource deleted successfully' });
+    const result = await educationalService.deleteEducationalResource(req.params.id);
+    res.json(result);
   } catch (error) {
     console.error('Error deleting educational resource:', error);
+    if (error instanceof Error && error.message === 'Educational resource not found') {
+      return res.status(404).json({ error: 'Educational resource not found' });
+    }
     res.status(500).json({ error: 'Failed to delete educational resource' });
   }
 });

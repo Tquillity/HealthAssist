@@ -1,5 +1,5 @@
 import express from 'express';
-import Routine from '../models/Routine';
+import * as routineService from '../services/routineService';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
 import upload from '../middleware/upload';
 
@@ -16,17 +16,15 @@ const router = express.Router();
 // Get all routines with optional filtering
 router.get('/', authenticateToken, async (req: AuthRequest, res) => {
   try {
-    const { category, context, energy, duration, difficulty } = req.query;
+    const filters = {
+      category: req.query.category as string,
+      context: req.query.context as string,
+      energy: req.query.energy as string,
+      duration: req.query.duration as string,
+      difficulty: req.query.difficulty as string
+    };
     
-    const filter: any = { isActive: true };
-    
-    if (category) filter.category = category;
-    if (context) filter['metadata.context'] = context;
-    if (energy) filter['metadata.energy'] = energy;
-    if (duration) filter['metadata.duration'] = duration;
-    if (difficulty) filter['metadata.difficulty'] = difficulty;
-
-    const routines = await Routine.find(filter).sort({ createdAt: -1 });
+    const routines = await routineService.getRoutines(filters);
     res.json(routines);
   } catch (error) {
     console.error('Routines fetch error:', error);
@@ -37,15 +35,13 @@ router.get('/', authenticateToken, async (req: AuthRequest, res) => {
 // Get routine by ID
 router.get('/:id', authenticateToken, async (req: AuthRequest, res) => {
   try {
-    const routine = await Routine.findById(req.params.id);
-    
-    if (!routine) {
-      return res.status(404).json({ message: 'Routine not found' });
-    }
-
+    const routine = await routineService.getRoutineById(req.params.id);
     res.json(routine);
   } catch (error) {
     console.error('Routine fetch error:', error);
+    if (error instanceof Error && error.message === 'Routine not found') {
+      return res.status(404).json({ message: 'Routine not found' });
+    }
     res.status(500).json({ message: 'Server error fetching routine' });
   }
 });
@@ -53,46 +49,18 @@ router.get('/:id', authenticateToken, async (req: AuthRequest, res) => {
 // Todo-lottery: Get random routine(s) based on filters
 router.post('/lottery', authenticateToken, async (req: AuthRequest, res) => {
   try {
-    const { 
-      count = 1, 
-      category, 
-      context, 
-      energy, 
-      duration, 
-      difficulty,
-      excludeIds = [] 
-    } = req.body;
-
-    const filter: any = { 
-      isActive: true,
-      _id: { $nin: excludeIds }
+    const data = {
+      count: req.body.count || 1,
+      category: req.body.category,
+      context: req.body.context,
+      energy: req.body.energy,
+      duration: req.body.duration,
+      difficulty: req.body.difficulty,
+      excludeIds: req.body.excludeIds || []
     };
-    
-    if (category) filter.category = category;
-    if (context) filter['metadata.context'] = context;
-    if (energy) filter['metadata.energy'] = energy;
-    if (duration) filter['metadata.duration'] = duration;
-    if (difficulty) filter['metadata.difficulty'] = difficulty;
 
-    // Get all matching routines
-    const allRoutines = await Routine.find(filter);
-    
-    if (allRoutines.length === 0) {
-      return res.json({ 
-        message: 'No routines found matching your criteria',
-        routines: []
-      });
-    }
-
-    // Shuffle and select random routines
-    const shuffled = allRoutines.sort(() => 0.5 - Math.random());
-    const selectedRoutines = shuffled.slice(0, Math.min(count, allRoutines.length));
-
-    res.json({
-      message: `Selected ${selectedRoutines.length} routine(s)`,
-      routines: selectedRoutines,
-      totalAvailable: allRoutines.length
-    });
+    const result = await routineService.getRoutineLottery(data);
+    res.json(result);
   } catch (error) {
     console.error('Routine lottery error:', error);
     res.status(500).json({ message: 'Server error in routine lottery' });
@@ -122,13 +90,7 @@ router.post('/upload-image', authenticateToken, requireAdmin, upload.single('ima
 // Create new routine (Admin only)
 router.post('/', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
-    const routineData = {
-      ...req.body,
-      createdBy: req.user._id
-    };
-
-    const routine = new Routine(routineData);
-    await routine.save();
+    const routine = await routineService.createRoutine(req.user._id, req.body);
 
     res.status(201).json({
       message: 'Routine created successfully',
@@ -143,15 +105,7 @@ router.post('/', authenticateToken, requireAdmin, async (req: AuthRequest, res) 
 // Update routine (Admin only)
 router.put('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
-    const routine = await Routine.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-
-    if (!routine) {
-      return res.status(404).json({ message: 'Routine not found' });
-    }
+    const routine = await routineService.updateRoutine(req.params.id, req.body);
 
     res.json({
       message: 'Routine updated successfully',
@@ -159,6 +113,9 @@ router.put('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res
     });
   } catch (error) {
     console.error('Routine update error:', error);
+    if (error instanceof Error && error.message === 'Routine not found') {
+      return res.status(404).json({ message: 'Routine not found' });
+    }
     res.status(500).json({ message: 'Server error updating routine' });
   }
 });
@@ -166,15 +123,7 @@ router.put('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res
 // Delete routine (Admin only - soft delete)
 router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
   try {
-    const routine = await Routine.findByIdAndUpdate(
-      req.params.id,
-      { isActive: false },
-      { new: true }
-    );
-
-    if (!routine) {
-      return res.status(404).json({ message: 'Routine not found' });
-    }
+    const routine = await routineService.deleteRoutine(req.params.id);
 
     res.json({
       message: 'Routine deleted successfully',
@@ -182,6 +131,9 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, 
     });
   } catch (error) {
     console.error('Routine deletion error:', error);
+    if (error instanceof Error && error.message === 'Routine not found') {
+      return res.status(404).json({ message: 'Routine not found' });
+    }
     res.status(500).json({ message: 'Server error deleting routine' });
   }
 });
@@ -189,19 +141,8 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, 
 // Get routine categories
 router.get('/meta/categories', authenticateToken, async (req: AuthRequest, res) => {
   try {
-    const categories = await Routine.distinct('category', { isActive: true });
-    const contexts = await Routine.distinct('metadata.context', { isActive: true });
-    const energyLevels = await Routine.distinct('metadata.energy', { isActive: true });
-    const durations = await Routine.distinct('metadata.duration', { isActive: true });
-    const difficulties = await Routine.distinct('metadata.difficulty', { isActive: true });
-
-    res.json({
-      categories,
-      contexts,
-      energyLevels,
-      durations,
-      difficulties
-    });
+    const metadata = await routineService.getRoutineMetadata();
+    res.json(metadata);
   } catch (error) {
     console.error('Routine metadata error:', error);
     res.status(500).json({ message: 'Server error fetching routine metadata' });
