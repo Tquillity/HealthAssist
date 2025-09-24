@@ -164,3 +164,98 @@ export interface LotteryRequest {
   difficulty?: string;
   excludeIds?: string[];
 }
+
+// Journal Entry types
+export interface JournalEntry {
+  _id: string;
+  userId: string;
+  date: string;
+  mood: {
+    rating: number;
+    notes?: string;
+    emotions: string[];
+  };
+  energy: {
+    rating: number;
+    notes?: string;
+    factors: string[];
+  };
+  sleep: {
+    hours: number;
+    quality: number;
+    notes?: string;
+  };
+  exercise: {
+    duration: number;
+    type: string;
+    intensity: number;
+    notes?: string;
+  };
+  nutrition: {
+    meals: number;
+    water: number;
+    notes?: string;
+  };
+  stress: {
+    rating: number;
+    sources: string[];
+    copingStrategies: string[];
+    notes?: string;
+  };
+  gratitude: {
+    entries: string[];
+    notes?: string;
+  };
+  goals: {
+    achieved: string[];
+    progress: string[];
+    notes?: string;
+  };
+  symptoms: {
+    physical: string[];
+    mental: string[];
+    notes?: string;
+  };
+  isPrivate: boolean;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface JournalAnalytics {
+  mood: {
+    average: number;
+    trend: number;
+    distribution: {
+      high: number;
+      medium: number;
+      low: number;
+    };
+  };
+  energy: {
+    average: number;
+    trend: number;
+    distribution: {
+      high: number;
+      medium: number;
+      low: number;
+    };
+  };
+  sleep: {
+    averageHours: number;
+    averageQuality: number;
+  };
+  exercise: {
+    totalMinutes: number;
+    averageIntensity: number;
+    daysActive: number;
+  };
+  stress: {
+    average: number;
+    commonSources: Record<string, number>;
+  };
+  gratitude: {
+    totalEntries: number;
+    averagePerDay: number;
+  };
+}

@@ -77,4 +77,14 @@ export const mealPlansAPI = {
   getGroceryList: (id: string) => api.get(`/meal-plans/${id}/grocery-list`),
 };
 
+// Journal API
+export const journalAPI = {
+  getAll: (filters?: any) => api.get('/journal', { params: filters }),
+  getByDate: (date: string) => api.get(`/journal/date/${date}`),
+  create: (data: any) => api.post('/journal', data),
+  update: (id: string, data: any) => api.put(`/journal/${id}`, data),
+  delete: (id: string) => api.delete(`/journal/${id}`),
+  getAnalytics: (filters?: any) => api.get('/journal/analytics', { params: filters }),
+};
+
 export default api;

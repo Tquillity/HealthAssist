@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Routines from './pages/Routines';
 import Recipes from './pages/Recipes';
 import MealPlanner from './pages/MealPlanner';
+import Journal from './pages/Journal';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
@@ -53,6 +54,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MealPlanner />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/journal" 
+                element={
+                  <ProtectedRoute>
+                    <Journal />
                   </ProtectedRoute>
                 } 
               />

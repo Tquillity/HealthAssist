@@ -94,6 +94,16 @@ const Navbar: React.FC = () => {
               Meal Planner
             </Link>
             <Link
+              to="/journal"
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                isActive('/journal')
+                  ? 'bg-primary-100 text-primary-700'
+                  : 'text-gray-600 hover:text-primary-600'
+              }`}
+            >
+              Journal
+            </Link>
+            <Link
               to="/profile"
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 isActive('/profile')
