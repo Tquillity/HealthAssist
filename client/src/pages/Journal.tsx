@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { journalAPI } from '../services/api';
 import { JournalEntry, JournalAnalytics as AnalyticsType } from '../types';
-import { useAuth } from '../store/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import JournalForm from '../components/JournalForm';
 import JournalCalendar from '../components/JournalCalendar';
 import JournalAnalytics from '../components/JournalAnalytics';
@@ -9,14 +9,16 @@ import JournalEntryDetail from '../components/JournalEntryDetail';
 
 const Journal: React.FC = () => {
   const { state } = useAuth();
-  
+
   // Initialize with explicit types to avoid any type issues
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [analytics, setAnalytics] = useState<AnalyticsType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'calendar' | 'form' | 'analytics'>('calendar');
+  const [activeTab, setActiveTab] = useState<'calendar' | 'form' | 'analytics'>(
+    'calendar'
+  );
 
   // Initialize selectedDate after component mounts
   useEffect(() => {
@@ -75,7 +77,10 @@ const Journal: React.FC = () => {
       } else {
         console.error('Error fetching journal entry:', error);
         if (error.response?.status !== 404) {
-          console.error('Unexpected error fetching journal entry:', error.response?.data || error.message);
+          console.error(
+            'Unexpected error fetching journal entry:',
+            error.response?.data || error.message
+          );
         }
       }
     }
@@ -103,7 +108,13 @@ const Journal: React.FC = () => {
     if (state.isAuthenticated && state.user && !state.loading && selectedDate) {
       fetchEntryByDate(selectedDate);
     }
-  }, [selectedDate, state.isAuthenticated, state.user, state.loading, fetchEntryByDate]);
+  }, [
+    selectedDate,
+    state.isAuthenticated,
+    state.user,
+    state.loading,
+    fetchEntryByDate,
+  ]);
 
   // Handle conditional rendering AFTER all hooks are called
   if (!selectedDate) {
@@ -132,10 +143,14 @@ const Journal: React.FC = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Please log in to access your journal</h2>
-          <p className="text-gray-600 mb-6">You need to be logged in to view and manage your journal entries.</p>
-          <a 
-            href="/login" 
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Please log in to access your journal
+          </h2>
+          <p className="text-gray-600 mb-6">
+            You need to be logged in to view and manage your journal entries.
+          </p>
+          <a
+            href="/login"
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
           >
             Go to Login
@@ -149,7 +164,11 @@ const Journal: React.FC = () => {
     setSelectedDate(date);
     setActiveTab('form');
     // Push state to browser history for back button support
-    window.history.pushState({ tab: 'form', date }, '', window.location.pathname);
+    window.history.pushState(
+      { tab: 'form', date },
+      '',
+      window.location.pathname
+    );
   };
 
   const handleEntrySave = async (entryData: Partial<JournalEntry>) => {
@@ -157,9 +176,9 @@ const Journal: React.FC = () => {
       setLoading(true);
       const response = await journalAPI.create({
         ...entryData,
-        date: selectedDate
+        date: selectedDate,
       });
-      
+
       setSelectedEntry(response.data);
       await fetchEntries();
       await fetchAnalytics();
@@ -172,7 +191,7 @@ const Journal: React.FC = () => {
 
   const handleEntryUpdate = async (entryData: Partial<JournalEntry>) => {
     if (!selectedEntry?._id) return;
-    
+
     try {
       setLoading(true);
       const response = await journalAPI.update(selectedEntry._id, entryData);
@@ -188,7 +207,7 @@ const Journal: React.FC = () => {
 
   const handleEntryDelete = async () => {
     if (!selectedEntry?._id) return;
-    
+
     try {
       setLoading(true);
       await journalAPI.delete(selectedEntry._id);
@@ -269,13 +288,23 @@ const Journal: React.FC = () => {
                 }}
                 className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
                 Back to Calendar
               </button>
             </div>
-            
+
             <JournalForm
               date={selectedDate}
               entry={selectedEntry}

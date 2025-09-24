@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../store/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { routinesAPI, recipesAPI } from '../services/api';
 import { Routine } from '../types';
 import RoutineCard from '../components/RoutineCard';
@@ -22,22 +22,21 @@ const Dashboard: React.FC = () => {
 
       try {
         setLoading(true);
-        
+
         // Fetch recent routines
         const routinesResponse = await routinesAPI.getAll({ limit: 6 });
         console.log('Routines response:', routinesResponse);
         setRecentRoutines(routinesResponse.data);
-        
+
         // Fetch total routines count
         const allRoutinesResponse = await routinesAPI.getAll();
         console.log('All routines response:', allRoutinesResponse);
         setRoutinesCount(allRoutinesResponse.data.length);
-        
+
         // Fetch total recipes count
         const recipesResponse = await recipesAPI.getAll();
         console.log('Recipes response:', recipesResponse);
         setRecipesCount(recipesResponse.data.length);
-        
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
@@ -63,7 +62,9 @@ const Dashboard: React.FC = () => {
         {/* Quick Actions */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Quick Actions
+            </h2>
             <div className="space-y-3">
               <Link
                 to="/routines"
@@ -88,9 +89,13 @@ const Dashboard: React.FC = () => {
 
           {/* Health Tips */}
           <div className="bg-gradient-to-br from-primary-50 to-wellness-50 rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Today's Tip</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              Today's Tip
+            </h3>
             <p className="text-gray-700 text-sm">
-              "Starting your day with 5 minutes of deep breathing can significantly improve your energy levels and mental clarity throughout the day."
+              "Starting your day with 5 minutes of deep breathing can
+              significantly improve your energy levels and mental clarity
+              throughout the day."
             </p>
           </div>
         </div>
@@ -99,7 +104,9 @@ const Dashboard: React.FC = () => {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">Featured Routines</h2>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Featured Routines
+              </h2>
               <Link
                 to="/routines"
                 className="text-primary-600 hover:text-primary-700 font-medium"
@@ -135,8 +142,12 @@ const Dashboard: React.FC = () => {
               <span className="text-2xl">🧘</span>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Routines Available</p>
-              <p className="text-2xl font-bold text-gray-900">{routinesCount}</p>
+              <p className="text-sm font-medium text-gray-600">
+                Routines Available
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {routinesCount}
+              </p>
             </div>
           </div>
         </div>
@@ -147,7 +158,9 @@ const Dashboard: React.FC = () => {
               <span className="text-2xl">🍽️</span>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Recipes in Database</p>
+              <p className="text-sm font-medium text-gray-600">
+                Recipes in Database
+              </p>
               <p className="text-2xl font-bold text-gray-900">{recipesCount}</p>
             </div>
           </div>

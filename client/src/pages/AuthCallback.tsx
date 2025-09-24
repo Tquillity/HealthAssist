@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../store/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 const AuthCallback: React.FC = () => {
   const navigate = useNavigate();
@@ -21,14 +21,14 @@ const AuthCallback: React.FC = () => {
     if (token && userParam) {
       try {
         const user = JSON.parse(decodeURIComponent(userParam));
-        
+
         // Store token and user data
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
-        
+
         // Update auth context
         login(user, token);
-        
+
         // Redirect to dashboard
         navigate('/dashboard');
       } catch (error) {

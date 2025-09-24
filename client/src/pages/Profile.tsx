@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../store/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 const Profile: React.FC = () => {
   const { state, updateProfile } = useAuth();
@@ -12,7 +12,7 @@ const Profile: React.FC = () => {
     preferredContext: 'anytime',
     routineDuration: '15min',
     dietaryRestrictions: [] as string[],
-    healthGoals: [] as string[]
+    healthGoals: [] as string[],
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -28,15 +28,17 @@ const Profile: React.FC = () => {
         preferredContext: state.user.preferences.preferredContext,
         routineDuration: state.user.preferences.routineDuration,
         dietaryRestrictions: state.user.preferences.dietaryRestrictions,
-        healthGoals: state.user.preferences.healthGoals
+        healthGoals: state.user.preferences.healthGoals,
       });
     }
   }, [state.user]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -50,15 +52,15 @@ const Profile: React.FC = () => {
         profile: {
           firstName: formData.firstName,
           lastName: formData.lastName,
-          timezone: formData.timezone
+          timezone: formData.timezone,
         },
         preferences: {
           energy: formData.energy,
           preferredContext: formData.preferredContext,
           routineDuration: formData.routineDuration,
           dietaryRestrictions: formData.dietaryRestrictions,
-          healthGoals: formData.healthGoals
-        }
+          healthGoals: formData.healthGoals,
+        },
       });
       setMessage('Profile updated successfully!');
     } catch (error) {
@@ -75,7 +77,9 @@ const Profile: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Profile Settings</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Profile Settings
+        </h1>
         <p className="text-gray-600">
           Manage your personal information and preferences
         </p>
@@ -84,11 +88,13 @@ const Profile: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {message && (
-            <div className={`px-4 py-3 rounded-lg ${
-              message.includes('success') 
-                ? 'bg-green-50 border border-green-200 text-green-600'
-                : 'bg-red-50 border border-red-200 text-red-600'
-            }`}>
+            <div
+              className={`px-4 py-3 rounded-lg ${
+                message.includes('success')
+                  ? 'bg-green-50 border border-green-200 text-green-600'
+                  : 'bg-red-50 border border-red-200 text-red-600'
+              }`}
+            >
               {message}
             </div>
           )}

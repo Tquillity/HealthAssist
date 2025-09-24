@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../store/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 const Navbar: React.FC = () => {
   const { state, logout } = useAuth();
@@ -25,14 +25,14 @@ const Navbar: React.FC = () => {
               HealthHub
             </Link>
             <div className="space-x-4">
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className="text-gray-600 hover:text-primary-600 transition-colors"
               >
                 Login
               </Link>
-              <Link 
-                to="/register" 
+              <Link
+                to="/register"
                 className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
               >
                 Sign Up
@@ -51,7 +51,7 @@ const Navbar: React.FC = () => {
           <Link to="/dashboard" className="text-2xl font-bold text-primary-600">
             HealthHub
           </Link>
-          
+
           <div className="flex items-center space-x-8">
             <Link
               to="/dashboard"
@@ -123,7 +123,7 @@ const Navbar: React.FC = () => {
             >
               Profile
             </Link>
-            
+
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">
                 Welcome, {state.user?.profile.firstName}

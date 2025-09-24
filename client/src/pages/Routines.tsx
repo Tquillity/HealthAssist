@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { routinesAPI } from '../services/api';
 import { Routine, RoutineFilters, LotteryRequest } from '../types';
-import { useAuth } from '../store/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import RoutineCard from '../components/RoutineCard';
 import RoutineFiltersComponent from '../components/RoutineFilters';
 import LotteryModal from '../components/LotteryModal';
@@ -37,19 +37,29 @@ const Routines: React.FC = () => {
     let filtered = [...routines];
 
     if (filters.category) {
-      filtered = filtered.filter(routine => routine.category === filters.category);
+      filtered = filtered.filter(
+        (routine) => routine.category === filters.category
+      );
     }
     if (filters.context) {
-      filtered = filtered.filter(routine => routine.metadata.context === filters.context);
+      filtered = filtered.filter(
+        (routine) => routine.metadata.context === filters.context
+      );
     }
     if (filters.energy) {
-      filtered = filtered.filter(routine => routine.metadata.energy === filters.energy);
+      filtered = filtered.filter(
+        (routine) => routine.metadata.energy === filters.energy
+      );
     }
     if (filters.duration) {
-      filtered = filtered.filter(routine => routine.metadata.duration === filters.duration);
+      filtered = filtered.filter(
+        (routine) => routine.metadata.duration === filters.duration
+      );
     }
     if (filters.difficulty) {
-      filtered = filtered.filter(routine => routine.metadata.difficulty === filters.difficulty);
+      filtered = filtered.filter(
+        (routine) => routine.metadata.difficulty === filters.difficulty
+      );
     }
 
     setFilteredRoutines(filtered);
@@ -92,7 +102,9 @@ const Routines: React.FC = () => {
   };
 
   const handleDeleteRoutine = async (routine: Routine) => {
-    if (!window.confirm(`Are you sure you want to delete "${routine.title}"?`)) {
+    if (
+      !window.confirm(`Are you sure you want to delete "${routine.title}"?`)
+    ) {
       return;
     }
 
@@ -108,13 +120,13 @@ const Routines: React.FC = () => {
   const handleFormSubmit = async (routineData: Partial<Routine>) => {
     try {
       setFormLoading(true);
-      
+
       if (editingRoutine) {
         await routinesAPI.update(editingRoutine._id, routineData);
       } else {
         await routinesAPI.create(routineData);
       }
-      
+
       setShowForm(false);
       setEditingRoutine(null);
       await fetchRoutines();
@@ -136,7 +148,9 @@ const Routines: React.FC = () => {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Wellness Routines</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Wellness Routines
+            </h1>
             <p className="text-gray-600">
               Discover and practice routines for better health and wellness
             </p>
@@ -159,7 +173,8 @@ const Routines: React.FC = () => {
           <div>
             <h2 className="text-2xl font-bold mb-2">🎲 Routine Lottery</h2>
             <p className="text-primary-100">
-              Let us surprise you with a random routine tailored to your preferences
+              Let us surprise you with a random routine tailored to your
+              preferences
             </p>
           </div>
           <button
@@ -183,7 +198,8 @@ const Routines: React.FC = () => {
       {/* Results Count */}
       <div className="flex items-center justify-between mb-6">
         <p className="text-gray-600">
-          {filteredRoutines.length} routine{filteredRoutines.length !== 1 ? 's' : ''} found
+          {filteredRoutines.length} routine
+          {filteredRoutines.length !== 1 ? 's' : ''} found
         </p>
         <button
           onClick={() => handleLottery({ count: 1, ...filters })}
@@ -213,7 +229,9 @@ const Routines: React.FC = () => {
                 console.log('Selected routine:', routine.title);
               }}
               onEdit={isAdmin ? () => handleEditRoutine(routine) : undefined}
-              onDelete={isAdmin ? () => handleDeleteRoutine(routine) : undefined}
+              onDelete={
+                isAdmin ? () => handleDeleteRoutine(routine) : undefined
+              }
               showAdminControls={isAdmin}
             />
           ))}
@@ -221,9 +239,12 @@ const Routines: React.FC = () => {
       ) : (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🔍</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">No routines found</h3>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            No routines found
+          </h3>
           <p className="text-gray-600 mb-4">
-            Try adjusting your filters or clear them to see all available routines.
+            Try adjusting your filters or clear them to see all available
+            routines.
           </p>
           <button
             onClick={clearFilters}

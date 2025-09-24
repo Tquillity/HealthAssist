@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { recipesAPI } from '../services/api';
 import { Recipe } from '../types';
-import { useAuth } from '../store/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import RecipeCard from '../components/RecipeCard';
 import RecipeFiltersComponent from '../components/RecipeFilters';
 import RecipeForm from '../components/RecipeForm';
@@ -28,11 +28,11 @@ const Recipes: React.FC = () => {
   const isAdmin = state.user?.role === 'admin';
 
   // Fetch recipes with React Query
-  const { 
-    data: recipes = [], 
-    isLoading, 
-    isError, 
-    error 
+  const {
+    data: recipes = [],
+    isLoading,
+    isError,
+    error,
   } = useQuery<Recipe[]>({
     queryKey: ['recipes'],
     queryFn: () => recipesAPI.getAll(),
@@ -43,28 +43,41 @@ const Recipes: React.FC = () => {
     let filtered = [...recipes];
 
     if (filters.category) {
-      filtered = filtered.filter(recipe => recipe.metadata.category === filters.category);
+      filtered = filtered.filter(
+        (recipe) => recipe.metadata.category === filters.category
+      );
     }
     if (filters.difficulty) {
-      filtered = filtered.filter(recipe => recipe.metadata.difficulty === filters.difficulty);
+      filtered = filtered.filter(
+        (recipe) => recipe.metadata.difficulty === filters.difficulty
+      );
     }
     if (filters.dietaryTags && filters.dietaryTags.length > 0) {
-      filtered = filtered.filter(recipe => 
-        recipe.metadata.dietaryTags.some(tag => filters.dietaryTags!.includes(tag))
+      filtered = filtered.filter((recipe) =>
+        recipe.metadata.dietaryTags.some((tag) =>
+          filters.dietaryTags!.includes(tag)
+        )
       );
     }
     if (filters.cuisine) {
-      filtered = filtered.filter(recipe => 
-        recipe.metadata.cuisine.toLowerCase().includes(filters.cuisine!.toLowerCase())
+      filtered = filtered.filter((recipe) =>
+        recipe.metadata.cuisine
+          .toLowerCase()
+          .includes(filters.cuisine!.toLowerCase())
       );
     }
     if (filters.search) {
       const searchTerm = filters.search.toLowerCase();
-      filtered = filtered.filter(recipe => 
-        recipe.name.toLowerCase().includes(searchTerm) ||
-        recipe.description.toLowerCase().includes(searchTerm) ||
-        recipe.metadata.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
-        recipe.ingredients.some(ingredient => ingredient.name.toLowerCase().includes(searchTerm))
+      filtered = filtered.filter(
+        (recipe) =>
+          recipe.name.toLowerCase().includes(searchTerm) ||
+          recipe.description.toLowerCase().includes(searchTerm) ||
+          recipe.metadata.tags.some((tag) =>
+            tag.toLowerCase().includes(searchTerm)
+          ) ||
+          recipe.ingredients.some((ingredient) =>
+            ingredient.name.toLowerCase().includes(searchTerm)
+          )
       );
     }
 
@@ -99,7 +112,7 @@ const Recipes: React.FC = () => {
   });
 
   const updateRecipeMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Recipe> }) => 
+    mutationFn: ({ id, data }: { id: string; data: Partial<Recipe> }) =>
       recipesAPI.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recipes'] });
@@ -163,14 +176,18 @@ const Recipes: React.FC = () => {
             {editingRecipe ? 'Edit Recipe' : 'Add New Recipe'}
           </h1>
           <p className="text-gray-600">
-            {editingRecipe ? 'Update your recipe details' : 'Create a new recipe for your collection'}
+            {editingRecipe
+              ? 'Update your recipe details'
+              : 'Create a new recipe for your collection'}
           </p>
         </div>
         <RecipeForm
           recipe={editingRecipe || undefined}
           onSubmit={handleFormSubmit}
           onCancel={handleFormCancel}
-          loading={createRecipeMutation.isPending || updateRecipeMutation.isPending}
+          loading={
+            createRecipeMutation.isPending || updateRecipeMutation.isPending
+          }
         />
       </div>
     );
@@ -195,15 +212,18 @@ const Recipes: React.FC = () => {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Recipe Database</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Recipe Database
+            </h1>
             <p className="text-gray-600">
               Discover and manage your healthy recipes
             </p>
             {!isAdmin && (
               <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-700">
-                  <span className="font-medium">Note:</span> Only admin users can add, edit, or delete recipes. 
-                  Contact your administrator to add new recipes to the database.
+                  <span className="font-medium">Note:</span> Only admin users
+                  can add, edit, or delete recipes. Contact your administrator
+                  to add new recipes to the database.
                 </p>
               </div>
             )}
@@ -231,9 +251,12 @@ const Recipes: React.FC = () => {
       {/* Results Count */}
       <div className="flex items-center justify-between mb-6">
         <p className="text-gray-600">
-          {filteredRecipes.length} recipe{filteredRecipes.length !== 1 ? 's' : ''} found
+          {filteredRecipes.length} recipe
+          {filteredRecipes.length !== 1 ? 's' : ''} found
         </p>
-        {Object.values(filters).some(value => value && (Array.isArray(value) ? value.length > 0 : true)) && (
+        {Object.values(filters).some(
+          (value) => value && (Array.isArray(value) ? value.length > 0 : true)
+        ) && (
           <button
             onClick={clearFilters}
             className="text-primary-600 hover:text-primary-700 font-medium"
@@ -255,9 +278,12 @@ const Recipes: React.FC = () => {
       ) : isError ? (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">⚠️</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Error loading recipes</h3>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            Error loading recipes
+          </h3>
           <p className="text-gray-600 mb-6">
-            {error?.message || 'Something went wrong while loading recipes. Please try again.'}
+            {error?.message ||
+              'Something went wrong while loading recipes. Please try again.'}
           </p>
           <button
             onClick={() => window.location.reload()}
@@ -282,15 +308,22 @@ const Recipes: React.FC = () => {
       ) : (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🍽️</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">No recipes found</h3>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            No recipes found
+          </h3>
           <p className="text-gray-600 mb-6">
-            {Object.values(filters).some(value => value && (Array.isArray(value) ? value.length > 0 : true))
+            {Object.values(filters).some(
+              (value) =>
+                value && (Array.isArray(value) ? value.length > 0 : true)
+            )
               ? 'Try adjusting your filters or clear them to see all available recipes.'
-              : 'Start by adding your first recipe to your collection.'
-            }
+              : 'Start by adding your first recipe to your collection.'}
           </p>
           <div className="space-x-4">
-            {Object.values(filters).some(value => value && (Array.isArray(value) ? value.length > 0 : true)) && (
+            {Object.values(filters).some(
+              (value) =>
+                value && (Array.isArray(value) ? value.length > 0 : true)
+            ) && (
               <button
                 onClick={clearFilters}
                 className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
