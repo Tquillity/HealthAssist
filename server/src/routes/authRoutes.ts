@@ -2,13 +2,69 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import passport from 'passport';
+import { z } from 'zod';
 import User from '../models/User';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
+import { validate } from '../middleware/validation';
 
 const router = express.Router();
 
+// Validation schemas
+const registerSchema = z.object({
+  body: z.object({
+    username: z.string()
+      .min(3, 'Username must be at least 3 characters')
+      .max(30, 'Username must be less than 30 characters')
+      .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
+    email: z.string().email('Invalid email address'),
+    password: z.string()
+      .min(6, 'Password must be at least 6 characters')
+      .max(100, 'Password must be less than 100 characters'),
+    firstName: z.string()
+      .min(1, 'First name is required')
+      .max(50, 'First name must be less than 50 characters'),
+    lastName: z.string()
+      .min(1, 'Last name is required')
+      .max(50, 'Last name must be less than 50 characters'),
+    householdId: z.string().optional(),
+  }),
+});
+
+const loginSchema = z.object({
+  body: z.object({
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(1, 'Password is required'),
+  }),
+});
+
+const updateProfileSchema = z.object({
+  body: z.object({
+    username: z.string()
+      .min(3, 'Username must be at least 3 characters')
+      .max(30, 'Username must be less than 30 characters')
+      .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
+      .optional(),
+    email: z.string().email('Invalid email address').optional(),
+    profile: z.object({
+      firstName: z.string().min(1, 'First name is required').max(50, 'First name must be less than 50 characters').optional(),
+      lastName: z.string().min(1, 'Last name is required').max(50, 'Last name must be less than 50 characters').optional(),
+      timezone: z.string().optional(),
+    }).optional(),
+    preferences: z.object({
+      theme: z.enum(['light', 'dark', 'auto']).optional(),
+      notifications: z.boolean().optional(),
+    }).optional(),
+  }),
+});
+
+const householdParamsSchema = z.object({
+  params: z.object({
+    householdId: z.string().min(1, 'Household ID is required'),
+  }),
+});
+
 // Register new user
-router.post('/register', async (req, res) => {
+router.post('/register', validate(registerSchema), async (req, res) => {
   try {
     const { username, email, password, firstName, lastName, householdId } = req.body;
 
@@ -67,7 +123,7 @@ router.post('/register', async (req, res) => {
 });
 
 // Login user
-router.post('/login', async (req, res) => {
+router.post('/login', validate(loginSchema), async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -125,7 +181,7 @@ router.get('/profile', authenticateToken, async (req: AuthRequest, res) => {
 });
 
 // Update user profile
-router.put('/profile', authenticateToken, async (req: AuthRequest, res) => {
+router.put('/profile', authenticateToken, validate(updateProfileSchema), async (req: AuthRequest, res) => {
   try {
     const updates = req.body;
     const user = await User.findByIdAndUpdate(
@@ -145,7 +201,7 @@ router.put('/profile', authenticateToken, async (req: AuthRequest, res) => {
 });
 
 // Get household members
-router.get('/household/:householdId', authenticateToken, async (req: AuthRequest, res) => {
+router.get('/household/:householdId', authenticateToken, validate(householdParamsSchema), async (req: AuthRequest, res) => {
   try {
     const { householdId } = req.params;
     

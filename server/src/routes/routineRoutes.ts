@@ -1,6 +1,8 @@
 import express from 'express';
+import { z } from 'zod';
 import * as routineService from '../services/routineService';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
+import { validate } from '../middleware/validation';
 import upload from '../middleware/upload';
 
 // Admin-only middleware
@@ -12,6 +14,66 @@ const requireAdmin = (req: AuthRequest, res: any, next: any) => {
 };
 
 const router = express.Router();
+
+// Validation schemas
+const routineParamsSchema = z.object({
+  params: z.object({
+    id: z.string().min(1, 'Routine ID is required'),
+  }),
+});
+
+const lotterySchema = z.object({
+  body: z.object({
+    count: z.number().int().min(1, 'Count must be at least 1').max(10, 'Count must be at most 10').optional(),
+    category: z.string().optional(),
+    context: z.string().optional(),
+    energy: z.string().optional(),
+    duration: z.string().optional(),
+    difficulty: z.string().optional(),
+    excludeIds: z.array(z.string()).optional(),
+  }),
+});
+
+const createRoutineSchema = z.object({
+  body: z.object({
+    title: z.string().min(1, 'Title is required').max(100, 'Title must be less than 100 characters'),
+    description: z.string().min(1, 'Description is required').max(500, 'Description must be less than 500 characters'),
+    category: z.string().min(1, 'Category is required'),
+    context: z.array(z.string()).min(1, 'At least one context is required'),
+    energy: z.enum(['low', 'medium', 'high']),
+    duration: z.enum(['short', 'medium', 'long']),
+    difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
+    steps: z.array(z.object({
+      title: z.string().min(1, 'Step title is required'),
+      description: z.string().min(1, 'Step description is required'),
+      duration: z.number().int().min(1, 'Step duration must be at least 1 minute'),
+    })).min(1, 'At least one step is required'),
+    imageUrl: z.string().url().optional(),
+    tags: z.array(z.string()).optional(),
+  }),
+});
+
+const updateRoutineSchema = z.object({
+  params: z.object({
+    id: z.string().min(1, 'Routine ID is required'),
+  }),
+  body: z.object({
+    title: z.string().min(1, 'Title is required').max(100, 'Title must be less than 100 characters').optional(),
+    description: z.string().min(1, 'Description is required').max(500, 'Description must be less than 500 characters').optional(),
+    category: z.string().min(1, 'Category is required').optional(),
+    context: z.array(z.string()).min(1, 'At least one context is required').optional(),
+    energy: z.enum(['low', 'medium', 'high']).optional(),
+    duration: z.enum(['short', 'medium', 'long']).optional(),
+    difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+    steps: z.array(z.object({
+      title: z.string().min(1, 'Step title is required'),
+      description: z.string().min(1, 'Step description is required'),
+      duration: z.number().int().min(1, 'Step duration must be at least 1 minute'),
+    })).min(1, 'At least one step is required').optional(),
+    imageUrl: z.string().url().optional(),
+    tags: z.array(z.string()).optional(),
+  }),
+});
 
 // Get all routines with optional filtering
 router.get('/', authenticateToken, async (req: AuthRequest, res) => {
@@ -33,7 +95,7 @@ router.get('/', authenticateToken, async (req: AuthRequest, res) => {
 });
 
 // Get routine by ID
-router.get('/:id', authenticateToken, async (req: AuthRequest, res) => {
+router.get('/:id', authenticateToken, validate(routineParamsSchema), async (req: AuthRequest, res) => {
   try {
     const routine = await routineService.getRoutineById(req.params.id);
     res.json(routine);
@@ -47,7 +109,7 @@ router.get('/:id', authenticateToken, async (req: AuthRequest, res) => {
 });
 
 // Todo-lottery: Get random routine(s) based on filters
-router.post('/lottery', authenticateToken, async (req: AuthRequest, res) => {
+router.post('/lottery', authenticateToken, validate(lotterySchema), async (req: AuthRequest, res) => {
   try {
     const data = {
       count: req.body.count || 1,
@@ -88,7 +150,7 @@ router.post('/upload-image', authenticateToken, requireAdmin, upload.single('ima
 });
 
 // Create new routine (Admin only)
-router.post('/', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+router.post('/', authenticateToken, requireAdmin, validate(createRoutineSchema), async (req: AuthRequest, res) => {
   try {
     const routine = await routineService.createRoutine(req.user._id, req.body);
 
@@ -103,7 +165,7 @@ router.post('/', authenticateToken, requireAdmin, async (req: AuthRequest, res) 
 });
 
 // Update routine (Admin only)
-router.put('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+router.put('/:id', authenticateToken, requireAdmin, validate(updateRoutineSchema), async (req: AuthRequest, res) => {
   try {
     const routine = await routineService.updateRoutine(req.params.id, req.body);
 
@@ -121,7 +183,7 @@ router.put('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res
 });
 
 // Delete routine (Admin only - soft delete)
-router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+router.delete('/:id', authenticateToken, requireAdmin, validate(routineParamsSchema), async (req: AuthRequest, res) => {
   try {
     const routine = await routineService.deleteRoutine(req.params.id);
 

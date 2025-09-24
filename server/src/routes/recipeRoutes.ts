@@ -1,6 +1,8 @@
 import express from 'express';
+import { z } from 'zod';
 import * as recipeService from '../services/recipeService';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
+import { validate } from '../middleware/validation';
 import upload from '../middleware/upload';
 
 // Admin-only middleware
@@ -12,6 +14,56 @@ const requireAdmin = (req: AuthRequest, res: any, next: any) => {
 };
 
 const router = express.Router();
+
+// Validation schemas
+const recipeParamsSchema = z.object({
+  params: z.object({
+    id: z.string().min(1, 'Recipe ID is required'),
+  }),
+});
+
+const createRecipeSchema = z.object({
+  body: z.object({
+    title: z.string().min(1, 'Title is required').max(100, 'Title must be less than 100 characters'),
+    description: z.string().min(1, 'Description is required').max(500, 'Description must be less than 500 characters'),
+    ingredients: z.array(z.object({
+      name: z.string().min(1, 'Ingredient name is required'),
+      amount: z.string().min(1, 'Amount is required'),
+      unit: z.string().min(1, 'Unit is required'),
+    })).min(1, 'At least one ingredient is required'),
+    instructions: z.array(z.string().min(1, 'Instruction cannot be empty')).min(1, 'At least one instruction is required'),
+    prepTime: z.number().int().min(0, 'Prep time must be non-negative'),
+    cookTime: z.number().int().min(0, 'Cook time must be non-negative'),
+    servings: z.number().int().min(1, 'Servings must be at least 1'),
+    difficulty: z.enum(['easy', 'medium', 'hard']),
+    category: z.string().min(1, 'Category is required'),
+    dietaryTags: z.array(z.string()).optional(),
+    imageUrl: z.string().url().optional(),
+  }),
+});
+
+const updateRecipeSchema = z.object({
+  params: z.object({
+    id: z.string().min(1, 'Recipe ID is required'),
+  }),
+  body: z.object({
+    title: z.string().min(1, 'Title is required').max(100, 'Title must be less than 100 characters').optional(),
+    description: z.string().min(1, 'Description is required').max(500, 'Description must be less than 500 characters').optional(),
+    ingredients: z.array(z.object({
+      name: z.string().min(1, 'Ingredient name is required'),
+      amount: z.string().min(1, 'Amount is required'),
+      unit: z.string().min(1, 'Unit is required'),
+    })).min(1, 'At least one ingredient is required').optional(),
+    instructions: z.array(z.string().min(1, 'Instruction cannot be empty')).min(1, 'At least one instruction is required').optional(),
+    prepTime: z.number().int().min(0, 'Prep time must be non-negative').optional(),
+    cookTime: z.number().int().min(0, 'Cook time must be non-negative').optional(),
+    servings: z.number().int().min(1, 'Servings must be at least 1').optional(),
+    difficulty: z.enum(['easy', 'medium', 'hard']).optional(),
+    category: z.string().min(1, 'Category is required').optional(),
+    dietaryTags: z.array(z.string()).optional(),
+    imageUrl: z.string().url().optional(),
+  }),
+});
 
 // Get all recipes for household
 router.get('/', authenticateToken, async (req: AuthRequest, res) => {
@@ -32,7 +84,7 @@ router.get('/', authenticateToken, async (req: AuthRequest, res) => {
 });
 
 // Get recipe by ID
-router.get('/:id', authenticateToken, async (req: AuthRequest, res) => {
+router.get('/:id', authenticateToken, validate(recipeParamsSchema), async (req: AuthRequest, res) => {
   try {
     const recipe = await recipeService.getRecipeById(req.user.householdId, req.params.id);
     res.json(recipe);
@@ -66,7 +118,7 @@ router.post('/upload-image', authenticateToken, requireAdmin, upload.single('ima
 });
 
 // Create new recipe (Admin only)
-router.post('/', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+router.post('/', authenticateToken, requireAdmin, validate(createRecipeSchema), async (req: AuthRequest, res) => {
   try {
     const recipe = await recipeService.createRecipe(
       req.user.householdId,
@@ -85,7 +137,7 @@ router.post('/', authenticateToken, requireAdmin, async (req: AuthRequest, res) 
 });
 
 // Update recipe (Admin only)
-router.put('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+router.put('/:id', authenticateToken, requireAdmin, validate(updateRecipeSchema), async (req: AuthRequest, res) => {
   try {
     const recipe = await recipeService.updateRecipe(
       req.user.householdId,
@@ -107,7 +159,7 @@ router.put('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res
 });
 
 // Delete recipe (Admin only)
-router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+router.delete('/:id', authenticateToken, requireAdmin, validate(recipeParamsSchema), async (req: AuthRequest, res) => {
   try {
     const recipe = await recipeService.deleteRecipe(
       req.user.householdId,

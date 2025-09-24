@@ -1,9 +1,52 @@
 import express from 'express';
 import { Request, Response } from 'express';
+import { z } from 'zod';
 import * as journalService from '../services/journalService';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
+import { validate } from '../middleware/validation';
 
 const router = express.Router();
+
+// Validation schemas
+const journalDateParamsSchema = z.object({
+  params: z.object({
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
+  }),
+});
+
+const createJournalEntrySchema = z.object({
+  body: z.object({
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
+    mood: z.enum(['very_low', 'low', 'neutral', 'good', 'excellent']).optional(),
+    energy: z.enum(['very_low', 'low', 'medium', 'high', 'very_high']).optional(),
+    sleep: z.object({
+      hours: z.number().min(0, 'Sleep hours must be non-negative').max(24, 'Sleep hours cannot exceed 24'),
+      quality: z.enum(['poor', 'fair', 'good', 'excellent']).optional(),
+    }).optional(),
+    activities: z.array(z.string()).optional(),
+    notes: z.string().max(1000, 'Notes must be less than 1000 characters').optional(),
+    symptoms: z.array(z.string()).optional(),
+    medications: z.array(z.string()).optional(),
+  }),
+});
+
+const updateJournalEntrySchema = z.object({
+  params: z.object({
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
+  }),
+  body: z.object({
+    mood: z.enum(['very_low', 'low', 'neutral', 'good', 'excellent']).optional(),
+    energy: z.enum(['very_low', 'low', 'medium', 'high', 'very_high']).optional(),
+    sleep: z.object({
+      hours: z.number().min(0, 'Sleep hours must be non-negative').max(24, 'Sleep hours cannot exceed 24'),
+      quality: z.enum(['poor', 'fair', 'good', 'excellent']).optional(),
+    }).optional(),
+    activities: z.array(z.string()).optional(),
+    notes: z.string().max(1000, 'Notes must be less than 1000 characters').optional(),
+    symptoms: z.array(z.string()).optional(),
+    medications: z.array(z.string()).optional(),
+  }),
+});
 
 // Get all journal entries for a user
 router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
@@ -23,7 +66,7 @@ router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
 });
 
 // Get journal entry by date
-router.get('/date/:date', authenticateToken, async (req: AuthRequest, res: Response) => {
+router.get('/date/:date', authenticateToken, validate(journalDateParamsSchema), async (req: AuthRequest, res: Response) => {
   try {
     const entry = await journalService.getJournalEntryByDate(req.user._id, req.params.date);
     
@@ -39,7 +82,7 @@ router.get('/date/:date', authenticateToken, async (req: AuthRequest, res: Respo
 });
 
 // Create or update journal entry
-router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
+router.post('/', authenticateToken, validate(createJournalEntrySchema), async (req: AuthRequest, res: Response) => {
   try {
     const entry = await journalService.createJournalEntry(req.user._id, req.body);
     res.status(201).json(entry);
