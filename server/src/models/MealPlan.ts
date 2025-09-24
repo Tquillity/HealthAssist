@@ -29,8 +29,7 @@ export interface IMealPlan extends Document {
 const MealPlanSchema = new Schema<IMealPlan>({
   householdId: {
     type: String,
-    required: true,
-    index: true
+    required: true
   },
   weekStartDate: {
     type: Date,

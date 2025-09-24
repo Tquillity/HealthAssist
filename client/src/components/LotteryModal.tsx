@@ -178,7 +178,7 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
                   type="submit"
                   className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700"
                 >
-                  🎲 Get Random Routine{lotteryRequest.count > 1 ? 's' : ''}
+                  🎲 Get Random Routine{(lotteryRequest.count || 1) > 1 ? 's' : ''}
                 </button>
               </div>
             </form>

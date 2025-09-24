@@ -60,9 +60,9 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+// 404 handler - catch all routes
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
 });
 
 // Start server

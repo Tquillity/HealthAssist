@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { routinesAPI } from '../services/api';
 import { Routine, RoutineFilters, LotteryRequest } from '../types';
 import RoutineCard from '../components/RoutineCard';
@@ -13,14 +13,6 @@ const Routines: React.FC = () => {
   const [showLotteryModal, setShowLotteryModal] = useState(false);
   const [selectedRoutines, setSelectedRoutines] = useState<Routine[]>([]);
 
-  useEffect(() => {
-    fetchRoutines();
-  }, []);
-
-  useEffect(() => {
-    applyFilters();
-  }, [routines, filters]);
-
   const fetchRoutines = async () => {
     try {
       setLoading(true);
@@ -33,7 +25,7 @@ const Routines: React.FC = () => {
     }
   };
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = [...routines];
 
     if (filters.category) {
@@ -53,7 +45,15 @@ const Routines: React.FC = () => {
     }
 
     setFilteredRoutines(filtered);
-  };
+  }, [routines, filters]);
+
+  useEffect(() => {
+    fetchRoutines();
+  }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
 
   const handleLottery = async (lotteryRequest: LotteryRequest) => {
     try {

@@ -46,8 +46,7 @@ const UserSchema = new Schema<IUser>({
   },
   householdId: {
     type: String,
-    required: true,
-    index: true
+    required: true
   },
   preferences: {
     energy: {

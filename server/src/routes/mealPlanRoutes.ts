@@ -219,7 +219,7 @@ router.get('/:id/grocery-list', authenticateToken, async (req: AuthRequest, res)
     const ingredientMap = new Map();
     
     mealPlan.meals.forEach(meal => {
-      const recipe = recipes.find(r => r._id.toString() === meal.recipeId);
+      const recipe = recipes.find(r => String(r._id) === meal.recipeId);
       if (recipe) {
         recipe.ingredients.forEach(ingredient => {
           const key = `${ingredient.name.toLowerCase()}_${ingredient.unit}`;

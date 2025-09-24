@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Routine from '../models/Routine';
 import Recipe from '../models/Recipe';
+import User from '../models/User';
+import bcrypt from 'bcryptjs';
 
 // Load environment variables
 dotenv.config();
@@ -11,254 +13,424 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/HA';
 // Sample routines data
 const sampleRoutines = [
   {
-    title: 'Morning Breathwork',
-    description: 'A gentle breathing exercise to start your day with energy and clarity.',
-    imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
-    category: 'breathwork',
+    title: "Morning Breathwork",
+    description: "Start your day with energizing breathwork to boost energy and focus",
+    imageUrl: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400",
+    category: "breathwork" as const,
     metadata: {
-      context: 'morning',
-      energy: 'medium',
-      duration: '5min',
-      difficulty: 'beginner',
+      context: "morning" as const,
+      energy: "high" as const,
+      duration: "5min" as const,
+      difficulty: "beginner" as const,
       equipment: [],
-      tags: ['energy', 'focus', 'calm']
+      tags: ["energy", "focus", "morning"]
     },
     instructions: {
       steps: [
         {
           step: 1,
-          title: 'Find a comfortable position',
-          description: 'Sit or stand with your spine straight and shoulders relaxed.',
-          duration: '30 seconds'
+          title: "Find Comfortable Position",
+          description: "Sit or stand comfortably with spine straight",
+          duration: "30 seconds"
         },
         {
           step: 2,
-          title: 'Inhale deeply',
-          description: 'Breathe in slowly through your nose for 4 counts.',
-          duration: '4 seconds'
+          title: "Deep Breathing",
+          description: "Take 10 deep breaths, inhaling for 4 counts, exhaling for 4 counts",
+          duration: "2 minutes"
         },
         {
           step: 3,
-          title: 'Hold your breath',
-          description: 'Hold the breath gently for 4 counts.',
-          duration: '4 seconds'
-        },
-        {
-          step: 4,
-          title: 'Exhale slowly',
-          description: 'Release the breath through your mouth for 6 counts.',
-          duration: '6 seconds'
+          title: "Energizing Breaths",
+          description: "Take 5 quick, sharp inhales through nose, then one long exhale",
+          duration: "1 minute"
         }
       ],
       tips: [
-        'Keep your shoulders relaxed throughout',
-        'Focus on the rhythm of your breathing',
-        'If you feel lightheaded, return to normal breathing'
+        "Keep shoulders relaxed",
+        "Focus on the breath",
+        "If you feel lightheaded, slow down"
       ],
       contraindications: [
-        'Avoid if you have respiratory conditions',
-        'Stop if you feel dizzy or uncomfortable'
+        "Not recommended if you have respiratory issues"
       ]
     },
-    createdBy: 'system'
+    isActive: true,
+    createdBy: "system"
   },
   {
-    title: 'Evening Meditation',
-    description: 'A calming meditation practice to wind down and prepare for restful sleep.',
-    imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400',
-    category: 'meditation',
+    title: "Evening Meditation",
+    description: "Calming meditation to wind down and prepare for restful sleep",
+    imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400",
+    category: "meditation" as const,
     metadata: {
-      context: 'evening',
-      energy: 'low',
-      duration: '15min',
-      difficulty: 'beginner',
+      context: "evening" as const,
+      energy: "low" as const,
+      duration: "15min" as const,
+      difficulty: "beginner" as const,
       equipment: [],
-      tags: ['sleep', 'relaxation', 'mindfulness']
+      tags: ["sleep", "calm", "evening", "mindfulness"]
     },
     instructions: {
       steps: [
         {
           step: 1,
-          title: 'Prepare your space',
-          description: 'Find a quiet, comfortable place where you won\'t be disturbed.',
-          duration: '1 minute'
+          title: "Prepare Space",
+          description: "Find a quiet, comfortable space with dim lighting",
+          duration: "1 minute"
         },
         {
           step: 2,
-          title: 'Settle into position',
-          description: 'Sit comfortably with your back straight or lie down if preferred.',
-          duration: '1 minute'
+          title: "Body Scan",
+          description: "Slowly scan your body from head to toe, releasing tension",
+          duration: "5 minutes"
         },
         {
           step: 3,
-          title: 'Body scan',
-          description: 'Slowly scan your body from head to toe, releasing tension.',
-          duration: '5 minutes'
+          title: "Mindful Breathing",
+          description: "Focus on your breath, letting thoughts pass without judgment",
+          duration: "8 minutes"
         },
         {
           step: 4,
-          title: 'Focus on breathing',
-          description: 'Gently focus on your natural breathing rhythm.',
-          duration: '8 minutes'
+          title: "Gratitude",
+          description: "Think of three things you're grateful for today",
+          duration: "1 minute"
         }
       ],
       tips: [
-        'Dim the lights to signal to your body it\'s time to rest',
-        'Use a meditation app or timer if helpful',
-        'Don\'t judge your thoughts, just observe them'
+        "Use a meditation app if helpful",
+        "Don't worry if your mind wanders",
+        "Consistency is more important than perfection"
       ],
       contraindications: []
     },
-    createdBy: 'system'
+    isActive: true,
+    createdBy: "system"
   },
   {
-    title: 'Energy Boost Stretches',
-    description: 'Quick stretching routine to increase energy and improve circulation.',
-    imageUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400',
-    category: 'stretching',
+    title: "Quick Energy Boost",
+    description: "5-minute routine to increase energy and alertness",
+    imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
+    category: "exercise" as const,
     metadata: {
-      context: 'anytime',
-      energy: 'high',
-      duration: '10min',
-      difficulty: 'beginner',
+      context: "anytime" as const,
+      energy: "high" as const,
+      duration: "5min" as const,
+      difficulty: "beginner" as const,
       equipment: [],
-      tags: ['energy', 'flexibility', 'circulation']
+      tags: ["energy", "quick", "movement"]
     },
     instructions: {
       steps: [
         {
           step: 1,
-          title: 'Neck rolls',
-          description: 'Gently roll your head in slow circles, both directions.',
-          duration: '1 minute'
+          title: "Jumping Jacks",
+          description: "30 jumping jacks to get blood flowing",
+          duration: "1 minute"
         },
         {
           step: 2,
-          title: 'Shoulder shrugs',
-          description: 'Lift shoulders to ears, hold, then release.',
-          duration: '1 minute'
+          title: "Arm Circles",
+          description: "Large arm circles forward and backward",
+          duration: "1 minute"
         },
         {
           step: 3,
-          title: 'Arm circles',
-          description: 'Extend arms and make large circles forward and backward.',
-          duration: '2 minutes'
+          title: "Squats",
+          description: "15 bodyweight squats",
+          duration: "1 minute"
         },
         {
           step: 4,
-          title: 'Spinal twists',
-          description: 'Sit and gently twist your spine left and right.',
-          duration: '2 minutes'
-        },
-        {
-          step: 5,
-          title: 'Leg stretches',
-          description: 'Stand and gently stretch your legs and calves.',
-          duration: '4 minutes'
+          title: "Stretching",
+          description: "Reach arms overhead and stretch side to side",
+          duration: "2 minutes"
         }
       ],
       tips: [
-        'Move slowly and mindfully',
-        'Stop if you feel any pain',
-        'Breathe deeply throughout'
+        "Modify intensity based on your energy level",
+        "Focus on form over speed",
+        "Listen to your body"
       ],
       contraindications: [
-        'Avoid if you have recent injuries',
-        'Modify movements if you have mobility limitations'
+        "Not recommended if you have joint issues"
       ]
     },
-    createdBy: 'system'
+    isActive: true,
+    createdBy: "system"
   }
 ];
 
 // Sample recipes data
 const sampleRecipes = [
   {
-    name: 'Quinoa Power Bowl',
-    description: 'A nutritious and energizing breakfast bowl packed with protein and fiber.',
-    imageUrl: 'https://images.unsplash.com/photo-1511690743698-d9d7f3f4c6f9?w=400',
+    name: "Green Smoothie Bowl",
+    description: "Nutritious and energizing smoothie bowl perfect for breakfast",
+    imageUrl: "https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?w=400",
     ingredients: [
-      { name: 'Quinoa', quantity: 1, unit: 'cup', notes: 'cooked' },
-      { name: 'Greek yogurt', quantity: 0.5, unit: 'cup' },
-      { name: 'Blueberries', quantity: 0.5, unit: 'cup' },
-      { name: 'Almonds', quantity: 2, unit: 'tbsp', notes: 'chopped' },
-      { name: 'Honey', quantity: 1, unit: 'tbsp' },
-      { name: 'Chia seeds', quantity: 1, unit: 'tsp' }
+      { name: "Banana", quantity: 1, unit: "medium" },
+      { name: "Spinach", quantity: 1, unit: "cup" },
+      { name: "Almond milk", quantity: 1, unit: "cup" },
+      { name: "Chia seeds", quantity: 1, unit: "tbsp" },
+      { name: "Honey", quantity: 1, unit: "tsp" }
     ],
     instructions: [
-      'Cook quinoa according to package instructions and let cool',
-      'Mix quinoa with Greek yogurt in a bowl',
-      'Top with blueberries, almonds, and chia seeds',
-      'Drizzle with honey and serve'
+      "Add all ingredients to blender",
+      "Blend until smooth and creamy",
+      "Pour into bowl and add toppings",
+      "Serve immediately"
     ],
     nutrition: {
-      calories: 320,
-      protein: 18,
+      calories: 250,
+      protein: 8,
       carbs: 45,
-      fat: 8,
-      fiber: 6,
-      sugar: 12,
+      fat: 6,
+      fiber: 12,
+      sugar: 28,
       sodium: 120,
       perServing: true
     },
     metadata: {
-      category: 'breakfast',
-      cuisine: 'Healthy',
-      difficulty: 'easy',
-      prepTime: 10,
-      cookTime: 15,
+      category: "breakfast" as const,
+      cuisine: "Healthy",
+      difficulty: "easy" as const,
+      prepTime: 5,
+      cookTime: 0,
       servings: 1,
-      tags: ['protein', 'fiber', 'antioxidants'],
-      dietaryTags: ['vegetarian', 'gluten-free']
+      tags: ["healthy", "quick", "vegetarian"],
+      dietaryTags: ["vegetarian", "gluten-free"]
     },
     isShared: true,
-    householdId: 'sample-household',
-    createdBy: 'system'
+    householdId: "sample_household",
+    createdBy: "system"
   },
   {
-    name: 'Mediterranean Salmon',
-    description: 'Light and healthy salmon with Mediterranean flavors.',
-    imageUrl: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400',
+    name: "Mediterranean Quinoa Bowl",
+    description: "Protein-rich quinoa bowl with fresh vegetables and herbs",
+    imageUrl: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400",
     ingredients: [
-      { name: 'Salmon fillet', quantity: 6, unit: 'oz' },
-      { name: 'Olive oil', quantity: 2, unit: 'tbsp' },
-      { name: 'Lemon', quantity: 1, unit: 'whole', notes: 'juiced' },
-      { name: 'Garlic', quantity: 2, unit: 'cloves', notes: 'minced' },
-      { name: 'Oregano', quantity: 1, unit: 'tsp', notes: 'dried' },
-      { name: 'Cherry tomatoes', quantity: 1, unit: 'cup', notes: 'halved' },
-      { name: 'Kalamata olives', quantity: 0.25, unit: 'cup', notes: 'pitted' }
+      { name: "Quinoa", quantity: 1, unit: "cup" },
+      { name: "Cherry tomatoes", quantity: 1, unit: "cup" },
+      { name: "Cucumber", quantity: 1, unit: "medium" },
+      { name: "Red onion", quantity: 0.25, unit: "cup" },
+      { name: "Feta cheese", quantity: 0.5, unit: "cup" },
+      { name: "Olive oil", quantity: 2, unit: "tbsp" },
+      { name: "Lemon juice", quantity: 1, unit: "tbsp" }
     ],
     instructions: [
-      'Preheat oven to 400°F (200°C)',
-      'Mix olive oil, lemon juice, garlic, and oregano in a bowl',
-      'Place salmon on a baking sheet and brush with the mixture',
-      'Surround with tomatoes and olives',
-      'Bake for 12-15 minutes until salmon flakes easily',
-      'Serve immediately'
+      "Cook quinoa according to package instructions",
+      "Dice cucumber and slice cherry tomatoes",
+      "Thinly slice red onion",
+      "Mix all vegetables with cooked quinoa",
+      "Drizzle with olive oil and lemon juice",
+      "Top with feta cheese and serve"
     ],
     nutrition: {
-      calories: 280,
-      protein: 35,
-      carbs: 8,
-      fat: 12,
-      fiber: 2,
-      sugar: 4,
-      sodium: 380,
+      calories: 320,
+      protein: 12,
+      carbs: 45,
+      fat: 10,
+      fiber: 6,
+      sugar: 8,
+      sodium: 280,
       perServing: true
     },
     metadata: {
-      category: 'dinner',
-      cuisine: 'Mediterranean',
-      difficulty: 'easy',
-      prepTime: 10,
+      category: "lunch" as const,
+      cuisine: "Mediterranean",
+      difficulty: "easy" as const,
+      prepTime: 15,
       cookTime: 15,
-      servings: 1,
-      tags: ['omega-3', 'protein', 'antioxidants'],
-      dietaryTags: ['gluten-free', 'dairy-free']
+      servings: 2,
+      tags: ["healthy", "protein", "vegetarian"],
+      dietaryTags: ["vegetarian", "gluten-free"]
     },
     isShared: true,
-    householdId: 'sample-household',
-    createdBy: 'system'
+    householdId: "sample_household",
+    createdBy: "system"
+  },
+  {
+    name: "Grilled Salmon with Roasted Vegetables",
+    description: "Healthy and flavorful salmon with seasonal roasted vegetables",
+    imageUrl: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400",
+    ingredients: [
+      { name: "Salmon fillet", quantity: 4, unit: "oz" },
+      { name: "Broccoli", quantity: 1, unit: "cup" },
+      { name: "Sweet potato", quantity: 1, unit: "medium" },
+      { name: "Olive oil", quantity: 2, unit: "tbsp" },
+      { name: "Garlic", quantity: 2, unit: "clove" },
+      { name: "Lemon", quantity: 0.5, unit: "piece" },
+      { name: "Salt", quantity: 0.5, unit: "tsp" },
+      { name: "Black pepper", quantity: 0.25, unit: "tsp" }
+    ],
+    instructions: [
+      "Preheat oven to 400°F (200°C)",
+      "Cut sweet potato into cubes and broccoli into florets",
+      "Toss vegetables with olive oil, garlic, salt, and pepper",
+      "Roast vegetables for 20-25 minutes until tender",
+      "Season salmon with salt, pepper, and lemon juice",
+      "Grill salmon for 4-5 minutes per side",
+      "Serve salmon over roasted vegetables"
+    ],
+    nutrition: {
+      calories: 420,
+      protein: 35,
+      carbs: 25,
+      fat: 18,
+      fiber: 6,
+      sugar: 8,
+      sodium: 450,
+      perServing: true
+    },
+    metadata: {
+      category: "dinner" as const,
+      cuisine: "American",
+      difficulty: "medium" as const,
+      prepTime: 15,
+      cookTime: 30,
+      servings: 1,
+      tags: ["healthy", "protein", "omega-3"],
+      dietaryTags: ["gluten-free", "dairy-free"]
+    },
+    isShared: true,
+    householdId: "sample_household",
+    createdBy: "system"
+  },
+  {
+    name: "Overnight Oats",
+    description: "Creamy and nutritious overnight oats perfect for busy mornings",
+    imageUrl: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400",
+    ingredients: [
+      { name: "Rolled oats", quantity: 0.5, unit: "cup" },
+      { name: "Greek yogurt", quantity: 0.25, unit: "cup" },
+      { name: "Almond milk", quantity: 0.5, unit: "cup" },
+      { name: "Chia seeds", quantity: 1, unit: "tbsp" },
+      { name: "Honey", quantity: 1, unit: "tbsp" },
+      { name: "Berries", quantity: 0.5, unit: "cup" },
+      { name: "Almonds", quantity: 1, unit: "tbsp" }
+    ],
+    instructions: [
+      "Mix oats, chia seeds, and yogurt in a jar",
+      "Add almond milk and honey, stir well",
+      "Cover and refrigerate overnight",
+      "In the morning, top with berries and almonds",
+      "Serve cold or at room temperature"
+    ],
+    nutrition: {
+      calories: 320,
+      protein: 15,
+      carbs: 45,
+      fat: 8,
+      fiber: 10,
+      sugar: 20,
+      sodium: 80,
+      perServing: true
+    },
+    metadata: {
+      category: "breakfast" as const,
+      cuisine: "Healthy",
+      difficulty: "easy" as const,
+      prepTime: 10,
+      cookTime: 0,
+      servings: 1,
+      tags: ["healthy", "make-ahead", "fiber"],
+      dietaryTags: ["vegetarian", "gluten-free"]
+    },
+    isShared: true,
+    householdId: "sample_household",
+    createdBy: "system"
+  },
+  {
+    name: "Vegetable Stir Fry",
+    description: "Quick and colorful vegetable stir fry with tofu",
+    imageUrl: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400",
+    ingredients: [
+      { name: "Tofu", quantity: 8, unit: "oz" },
+      { name: "Bell peppers", quantity: 2, unit: "medium" },
+      { name: "Broccoli", quantity: 1, unit: "cup" },
+      { name: "Carrots", quantity: 2, unit: "medium" },
+      { name: "Soy sauce", quantity: 3, unit: "tbsp" },
+      { name: "Sesame oil", quantity: 1, unit: "tbsp" },
+      { name: "Garlic", quantity: 3, unit: "clove" },
+      { name: "Ginger", quantity: 1, unit: "tbsp" },
+      { name: "Rice", quantity: 1, unit: "cup" }
+    ],
+    instructions: [
+      "Press and cube tofu, then pan-fry until golden",
+      "Cut all vegetables into bite-sized pieces",
+      "Heat sesame oil in a large wok or pan",
+      "Add garlic and ginger, stir for 30 seconds",
+      "Add vegetables and stir-fry for 5-7 minutes",
+      "Add tofu and soy sauce, cook for 2 more minutes",
+      "Serve over cooked rice"
+    ],
+    nutrition: {
+      calories: 380,
+      protein: 20,
+      carbs: 45,
+      fat: 12,
+      fiber: 8,
+      sugar: 12,
+      sodium: 800,
+      perServing: true
+    },
+    metadata: {
+      category: "dinner" as const,
+      cuisine: "Asian",
+      difficulty: "easy" as const,
+      prepTime: 15,
+      cookTime: 15,
+      servings: 2,
+      tags: ["healthy", "vegetarian", "quick"],
+      dietaryTags: ["vegetarian", "vegan", "gluten-free"]
+    },
+    isShared: true,
+    householdId: "sample_household",
+    createdBy: "system"
+  },
+  {
+    name: "Greek Yogurt Parfait",
+    description: "Layered parfait with Greek yogurt, granola, and fresh berries",
+    imageUrl: "https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400",
+    ingredients: [
+      { name: "Greek yogurt", quantity: 1, unit: "cup" },
+      { name: "Granola", quantity: 0.25, unit: "cup" },
+      { name: "Mixed berries", quantity: 0.5, unit: "cup" },
+      { name: "Honey", quantity: 1, unit: "tbsp" },
+      { name: "Almonds", quantity: 1, unit: "tbsp" },
+      { name: "Chia seeds", quantity: 1, unit: "tsp" }
+    ],
+    instructions: [
+      "Layer half the yogurt in a glass or bowl",
+      "Add half the berries and drizzle with honey",
+      "Sprinkle with half the granola and chia seeds",
+      "Repeat the layers",
+      "Top with almonds and serve immediately"
+    ],
+    nutrition: {
+      calories: 280,
+      protein: 18,
+      carbs: 35,
+      fat: 8,
+      fiber: 6,
+      sugar: 25,
+      sodium: 120,
+      perServing: true
+    },
+    metadata: {
+      category: "snack" as const,
+      cuisine: "Healthy",
+      difficulty: "easy" as const,
+      prepTime: 5,
+      cookTime: 0,
+      servings: 1,
+      tags: ["healthy", "protein", "quick"],
+      dietaryTags: ["vegetarian", "gluten-free"]
+    },
+    isShared: true,
+    householdId: "sample_household",
+    createdBy: "system"
   }
 ];
 
@@ -273,15 +445,45 @@ async function seedDatabase() {
     await Recipe.deleteMany({});
     console.log('Cleared existing data');
 
-    // Insert sample routines
+    // Create sample routines
     const routines = await Routine.insertMany(sampleRoutines);
-    console.log(`Inserted ${routines.length} routines`);
+    console.log(`Created ${routines.length} routines`);
 
-    // Insert sample recipes
+    // Create sample recipes
     const recipes = await Recipe.insertMany(sampleRecipes);
-    console.log(`Inserted ${recipes.length} recipes`);
+    console.log(`Created ${recipes.length} recipes`);
+
+    // Create a sample user for testing
+    const existingUser = await User.findOne({ email: 'test@example.com' });
+    if (!existingUser) {
+      const hashedPassword = await bcrypt.hash('password123', 12);
+      const sampleUser = new User({
+        username: 'testuser',
+        email: 'test@example.com',
+        password: hashedPassword,
+        householdId: 'sample_household',
+        profile: {
+          firstName: 'Test',
+          lastName: 'User',
+          timezone: 'UTC'
+        },
+        preferences: {
+          energy: 'medium',
+          preferredContext: 'anytime',
+          routineDuration: '15min',
+          dietaryRestrictions: [],
+          healthGoals: ['energy', 'sleep']
+        }
+      });
+      await sampleUser.save();
+      console.log('Created sample user: test@example.com / password123');
+    }
 
     console.log('Database seeding completed successfully!');
+    console.log('\nSample user credentials:');
+    console.log('Email: test@example.com');
+    console.log('Password: password123');
+    
   } catch (error) {
     console.error('Error seeding database:', error);
   } finally {

@@ -172,8 +172,7 @@ const RecipeSchema = new Schema<IRecipe>({
   },
   householdId: {
     type: String,
-    required: true,
-    index: true
+    required: true
   },
   createdBy: {
     type: String,

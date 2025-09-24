@@ -14,11 +14,11 @@ const RoutineFiltersComponent: React.FC<RoutineFiltersProps> = ({
   onClearFilters
 }) => {
   const [metadata, setMetadata] = useState({
-    categories: [],
-    contexts: [],
-    energyLevels: [],
-    durations: [],
-    difficulties: []
+    categories: [] as string[],
+    contexts: [] as string[],
+    energyLevels: [] as string[],
+    durations: [] as string[],
+    difficulties: [] as string[]
   });
 
   useEffect(() => {
