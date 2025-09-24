@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../store/AuthContext';
-import { routinesAPI } from '../services/api';
+import { routinesAPI, recipesAPI } from '../services/api';
 import { Routine } from '../types';
 import RoutineCard from '../components/RoutineCard';
 
@@ -9,21 +9,44 @@ const Dashboard: React.FC = () => {
   const { state } = useAuth();
   const [recentRoutines, setRecentRoutines] = useState<Routine[]>([]);
   const [loading, setLoading] = useState(true);
+  const [routinesCount, setRoutinesCount] = useState(0);
+  const [recipesCount, setRecipesCount] = useState(0);
 
   useEffect(() => {
-    const fetchRecentRoutines = async () => {
+    const fetchDashboardData = async () => {
+      // Only fetch data if user is authenticated
+      if (!state.isAuthenticated || !state.user) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await routinesAPI.getAll({ limit: 6 });
-        setRecentRoutines(response.data);
+        setLoading(true);
+        
+        // Fetch recent routines
+        const routinesResponse = await routinesAPI.getAll({ limit: 6 });
+        console.log('Routines response:', routinesResponse);
+        setRecentRoutines(routinesResponse.data);
+        
+        // Fetch total routines count
+        const allRoutinesResponse = await routinesAPI.getAll();
+        console.log('All routines response:', allRoutinesResponse);
+        setRoutinesCount(allRoutinesResponse.data.length);
+        
+        // Fetch total recipes count
+        const recipesResponse = await recipesAPI.getAll();
+        console.log('Recipes response:', recipesResponse);
+        setRecipesCount(recipesResponse.data.length);
+        
       } catch (error) {
-        console.error('Error fetching routines:', error);
+        console.error('Error fetching dashboard data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchRecentRoutines();
-  }, []);
+    fetchDashboardData();
+  }, [state.isAuthenticated, state.user]);
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -113,7 +136,7 @@ const Dashboard: React.FC = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Routines Available</p>
-              <p className="text-2xl font-bold text-gray-900">12+</p>
+              <p className="text-2xl font-bold text-gray-900">{routinesCount}</p>
             </div>
           </div>
         </div>
@@ -125,7 +148,7 @@ const Dashboard: React.FC = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Recipes in Database</p>
-              <p className="text-2xl font-bold text-gray-900">50+</p>
+              <p className="text-2xl font-bold text-gray-900">{recipesCount}</p>
             </div>
           </div>
         </div>
