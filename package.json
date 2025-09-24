@@ -1,0 +1,33 @@
+{
+  "name": "HA",
+  "version": "1.0.0",
+  "description": "Personalized Health and Wellness Hub - A comprehensive PWA for health management",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "./start-dev.sh",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "build": "cd server && npm run build && cd ../client && npm run build",
+    "start": "cd server && npm start",
+    "seed": "cd server && npm run build && node dist/scripts/seedDatabase.js",
+    "clean": "rm -rf client/node_modules server/node_modules client/dist server/dist"
+  },
+  "keywords": [
+    "health",
+    "wellness",
+    "pwa",
+    "react",
+    "nodejs",
+    "mongodb",
+    "typescript"
+  ],
+  "author": "Health Hub Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
