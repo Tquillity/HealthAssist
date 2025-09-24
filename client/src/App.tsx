@@ -1,8 +1,14 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { AuthProvider } from './store/AuthContext';
+import { AuthProvider } from '@/store/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
 import Routines from './pages/Routines';
@@ -54,61 +60,61 @@ const AppContent: React.FC = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route 
-            path="/dashboard" 
+          <Route
+            path="/dashboard"
             element={
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/routines" 
+          <Route
+            path="/routines"
             element={
               <ProtectedRoute>
                 <Routines />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/recipes" 
+          <Route
+            path="/recipes"
             element={
               <ProtectedRoute>
                 <Recipes />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/meal-planner" 
+          <Route
+            path="/meal-planner"
             element={
               <ProtectedRoute>
                 <MealPlanner />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/journal" 
+          <Route
+            path="/journal"
             element={
               <ProtectedRoute>
                 <Journal />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/educational" 
+          <Route
+            path="/educational"
             element={
               <ProtectedRoute>
                 <Educational />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
+          <Route
             path="/profile"
             element={
               <ProtectedRoute>
                 <Profile />
               </ProtectedRoute>
-            } 
+            }
           />
         </Routes>
       </main>
@@ -124,7 +130,7 @@ function App() {
   useEffect(() => {
     // Start heartbeat service when app loads
     console.log('🚀 Starting HealthAssist...');
-    
+
     // Small delay to prevent multiple rapid starts during development
     const timeoutId = setTimeout(() => {
       heartbeatService.start();

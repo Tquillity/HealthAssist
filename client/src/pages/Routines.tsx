@@ -202,7 +202,7 @@ const Routines: React.FC = () => {
           {filteredRoutines.length !== 1 ? 's' : ''} found
         </p>
         <button
-          onClick={() => handleLottery({ count: 1, ...filters })}
+          onClick={() => handleLottery({ count: 1, filters })}
           className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
         >
           Random Routine

@@ -11,14 +11,14 @@ interface RoutineFiltersProps {
 const RoutineFiltersComponent: React.FC<RoutineFiltersProps> = ({
   filters,
   onFilterChange,
-  onClearFilters
+  onClearFilters,
 }) => {
   const [metadata, setMetadata] = useState({
     categories: [] as string[],
     contexts: [] as string[],
     energyLevels: [] as string[],
     durations: [] as string[],
-    difficulties: [] as string[]
+    difficulties: [] as string[],
   });
 
   useEffect(() => {
@@ -39,7 +39,12 @@ const RoutineFiltersComponent: React.FC<RoutineFiltersProps> = ({
     if (value === '') {
       delete newFilters[key];
     } else {
-      newFilters[key] = value;
+      // Handle tags as array, others as string
+      if (key === 'tags') {
+        newFilters[key] = [value];
+      } else {
+        (newFilters as any)[key] = value;
+      }
     }
     onFilterChange(newFilters);
   };
@@ -167,7 +172,9 @@ const RoutineFiltersComponent: React.FC<RoutineFiltersProps> = ({
             >
               {key}: {value}
               <button
-                onClick={() => handleFilterChange(key as keyof RoutineFilters, '')}
+                onClick={() =>
+                  handleFilterChange(key as keyof RoutineFilters, '')
+                }
                 className="ml-2 text-primary-600 hover:text-primary-800"
               >
                 ×

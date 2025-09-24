@@ -1,6 +1,20 @@
 import axios from 'axios';
+import {
+  User,
+  Routine,
+  Recipe,
+  JournalEntry,
+  MealPlan,
+  EducationalResource,
+  RegisterRequest,
+  LoginRequest,
+  UpdateProfileRequest,
+  RoutineFilters,
+  LotteryRequest,
+} from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Create axios instance
 const api = axios.create({
@@ -39,11 +53,12 @@ api.interceptors.response.use(
 
 // Auth API
 export const authAPI = {
-  register: (userData: any) => api.post('/auth/register', userData),
-  login: (credentials: any) => api.post('/auth/login', credentials),
+  register: (userData: RegisterRequest) => api.post('/auth/register', userData),
+  login: (credentials: LoginRequest) => api.post('/auth/login', credentials),
   getProfile: () => api.get('/auth/profile'),
-  updateProfile: (data: any) => api.put('/auth/profile', data),
-  getHouseholdMembers: (householdId: string) => api.get(`/auth/household/${householdId}`),
+  updateProfile: (data: UpdateProfileRequest) => api.put('/auth/profile', data),
+  getHouseholdMembers: (householdId: string) =>
+    api.get(`/auth/household/${householdId}`),
 };
 
 // Routines API
@@ -55,26 +70,33 @@ export const routinesAPI = {
   update: (id: string, data: any) => api.put(`/routines/${id}`, data),
   delete: (id: string) => api.delete(`/routines/${id}`),
   getMetadata: () => api.get('/routines/meta/categories'),
-  uploadImage: (formData: FormData) => api.post('/routines/upload-image', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  }),
+  uploadImage: (formData: FormData) =>
+    api.post('/routines/upload-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
 };
 
 // Recipes API
 export const recipesAPI = {
-  getAll: (filters?: any) => api.get('/recipes', { params: filters }).then(res => res.data),
-  getById: (id: string) => api.get(`/recipes/${id}`).then(res => res.data),
-  create: (data: any) => api.post('/recipes', data).then(res => res.data),
-  update: (id: string, data: any) => api.put(`/recipes/${id}`, data).then(res => res.data),
-  delete: (id: string) => api.delete(`/recipes/${id}`).then(res => res.data),
-  getMetadata: () => api.get('/recipes/meta/categories').then(res => res.data),
-  uploadImage: (formData: FormData) => api.post('/recipes/upload-image', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  }).then(res => res.data),
+  getAll: (filters?: any) =>
+    api.get('/recipes', { params: filters }).then((res) => res.data),
+  getById: (id: string) => api.get(`/recipes/${id}`).then((res) => res.data),
+  create: (data: any) => api.post('/recipes', data).then((res) => res.data),
+  update: (id: string, data: any) =>
+    api.put(`/recipes/${id}`, data).then((res) => res.data),
+  delete: (id: string) => api.delete(`/recipes/${id}`).then((res) => res.data),
+  getMetadata: () =>
+    api.get('/recipes/meta/categories').then((res) => res.data),
+  uploadImage: (formData: FormData) =>
+    api
+      .post('/recipes/upload-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then((res) => res.data),
 };
 
 // Meal Plans API
@@ -94,14 +116,16 @@ export const journalAPI = {
   create: (data: any) => api.post('/journal', data),
   update: (id: string, data: any) => api.put(`/journal/${id}`, data),
   delete: (id: string) => api.delete(`/journal/${id}`),
-  getAnalytics: (filters?: any) => api.get('/journal/analytics', { params: filters }),
+  getAnalytics: (filters?: any) =>
+    api.get('/journal/analytics', { params: filters }),
 };
 
 // Educational Resources API
 export const educationalAPI = {
   getAll: (filters?: any) => api.get('/educational', { params: filters }),
   getById: (id: string) => api.get(`/educational/${id}`),
-  getFeatured: (limit?: number) => api.get('/educational/featured', { params: { limit } }),
+  getFeatured: (limit?: number) =>
+    api.get('/educational/featured', { params: { limit } }),
   getMetadata: () => api.get('/educational/meta/categories'),
   like: (id: string) => api.post(`/educational/${id}/like`),
   create: (data: any) => api.post('/educational', data),

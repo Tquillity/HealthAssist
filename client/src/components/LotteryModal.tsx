@@ -13,14 +13,16 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
   isOpen,
   onClose,
   onLottery,
-  selectedRoutines
+  selectedRoutines,
 }) => {
   const [lotteryRequest, setLotteryRequest] = useState<LotteryRequest>({
     count: 1,
-    context: '',
-    energy: '',
-    duration: '',
-    difficulty: ''
+    filters: {
+      context: '',
+      energy: '',
+      duration: '',
+      difficulty: '',
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -28,11 +30,21 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
     onLottery(lotteryRequest);
   };
 
-  const handleInputChange = (field: keyof LotteryRequest, value: string | number) => {
-    setLotteryRequest(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const handleInputChange = (field: string, value: string | number) => {
+    if (field === 'count') {
+      setLotteryRequest((prev) => ({
+        ...prev,
+        count: value as number,
+      }));
+    } else {
+      setLotteryRequest((prev) => ({
+        ...prev,
+        filters: {
+          ...prev.filters,
+          [field]: value as string,
+        },
+      }));
+    }
   };
 
   if (!isOpen) return null;
@@ -42,7 +54,9 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">🎲 Routine Lottery</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              🎲 Routine Lottery
+            </h2>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 text-2xl"
@@ -89,7 +103,9 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
                   </label>
                   <select
                     value={lotteryRequest.count}
-                    onChange={(e) => handleInputChange('count', parseInt(e.target.value))}
+                    onChange={(e) =>
+                      handleInputChange('count', parseInt(e.target.value))
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
                     <option value={1}>1 Routine</option>
@@ -104,8 +120,10 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
                       Time of Day (Optional)
                     </label>
                     <select
-                      value={lotteryRequest.context}
-                      onChange={(e) => handleInputChange('context', e.target.value)}
+                      value={lotteryRequest.filters.context || ''}
+                      onChange={(e) =>
+                        handleInputChange('context', e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     >
                       <option value="">Any Time</option>
@@ -120,8 +138,10 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
                       Energy Level (Optional)
                     </label>
                     <select
-                      value={lotteryRequest.energy}
-                      onChange={(e) => handleInputChange('energy', e.target.value)}
+                      value={lotteryRequest.filters.energy || ''}
+                      onChange={(e) =>
+                        handleInputChange('energy', e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     >
                       <option value="">Any Energy</option>
@@ -136,8 +156,10 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
                       Duration (Optional)
                     </label>
                     <select
-                      value={lotteryRequest.duration}
-                      onChange={(e) => handleInputChange('duration', e.target.value)}
+                      value={lotteryRequest.filters.duration || ''}
+                      onChange={(e) =>
+                        handleInputChange('duration', e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     >
                       <option value="">Any Duration</option>
@@ -153,8 +175,10 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
                       Difficulty (Optional)
                     </label>
                     <select
-                      value={lotteryRequest.difficulty}
-                      onChange={(e) => handleInputChange('difficulty', e.target.value)}
+                      value={lotteryRequest.filters.difficulty || ''}
+                      onChange={(e) =>
+                        handleInputChange('difficulty', e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     >
                       <option value="">Any Difficulty</option>
@@ -178,7 +202,8 @@ const LotteryModal: React.FC<LotteryModalProps> = ({
                   type="submit"
                   className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700"
                 >
-                  🎲 Get Random Routine{(lotteryRequest.count || 1) > 1 ? 's' : ''}
+                  🎲 Get Random Routine
+                  {(lotteryRequest.count || 1) > 1 ? 's' : ''}
                 </button>
               </div>
             </form>

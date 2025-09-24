@@ -1,3 +1,46 @@
+// API Request/Response types
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  householdId?: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface UpdateProfileRequest {
+  firstName?: string;
+  lastName?: string;
+  dateOfBirth?: string;
+  gender?: 'male' | 'female' | 'other';
+  timezone?: string;
+  energy?: 'low' | 'medium' | 'high';
+  preferredContext?: 'morning' | 'evening' | 'anytime';
+  routineDuration?: '5min' | '15min' | '30min' | '60min';
+  dietaryRestrictions?: string[];
+  healthGoals?: string[];
+}
+
+export interface RoutineFilters {
+  category?: string;
+  difficulty?: string;
+  duration?: string;
+  tags?: string[];
+  context?: string;
+  energy?: string;
+  excludeIds?: string[];
+}
+
+export interface LotteryRequest {
+  filters: RoutineFilters;
+  count: number;
+}
+
 // User types
 export interface User {
   id: string;
@@ -29,7 +72,14 @@ export interface Routine {
   title: string;
   description: string;
   imageUrl: string;
-  category: 'breathwork' | 'meditation' | 'exercise' | 'stretching' | 'mindfulness' | 'sleep' | 'energy';
+  category:
+    | 'breathwork'
+    | 'meditation'
+    | 'exercise'
+    | 'stretching'
+    | 'mindfulness'
+    | 'sleep'
+    | 'energy';
   metadata: {
     context: 'morning' | 'evening' | 'anytime';
     energy: 'low' | 'medium' | 'high';
@@ -83,7 +133,13 @@ export interface Recipe {
   instructions: string[];
   nutrition: NutritionInfo;
   metadata: {
-    category: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'dessert' | 'beverage';
+    category:
+      | 'breakfast'
+      | 'lunch'
+      | 'dinner'
+      | 'snack'
+      | 'dessert'
+      | 'beverage';
     cuisine: string;
     difficulty: 'easy' | 'medium' | 'hard';
     prepTime: number;
@@ -156,8 +212,7 @@ export interface RecipeFilters {
   search?: string;
 }
 
-export interface LotteryRequest {
-  count?: number;
+export interface LotteryFilters {
   category?: string;
   context?: string;
   energy?: string;
@@ -267,7 +322,17 @@ export interface EducationalResource {
   title: string;
   content: string;
   excerpt: string;
-  category: 'nutrition' | 'exercise' | 'mental-health' | 'sleep' | 'wellness' | 'meditation' | 'stress-management' | 'hormones' | 'recipes' | 'lifestyle';
+  category:
+    | 'nutrition'
+    | 'exercise'
+    | 'mental-health'
+    | 'sleep'
+    | 'wellness'
+    | 'meditation'
+    | 'stress-management'
+    | 'hormones'
+    | 'recipes'
+    | 'lifestyle';
   tags: string[];
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   readTime: number;
