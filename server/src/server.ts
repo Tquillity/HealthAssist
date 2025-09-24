@@ -18,7 +18,7 @@ import educationalRoutes from './routes/educationalRoutes';
 import './config/passport';
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ debug: false });
 
 const app = express();
 const PORT = process.env.PORT || 5000;

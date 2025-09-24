@@ -30,8 +30,8 @@ const HeartbeatStatus: React.FC<HeartbeatStatusProps> = ({ showDetails = false }
     // Initial check
     checkStatus();
 
-    // Check every 30 seconds for UI updates
-    const interval = setInterval(checkStatus, 30000);
+    // Check every 120 seconds for UI updates
+    const interval = setInterval(checkStatus, 120000);
 
     return () => clearInterval(interval);
   }, []);
