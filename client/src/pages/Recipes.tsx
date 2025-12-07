@@ -7,6 +7,7 @@ import RecipeCard from '../components/RecipeCard';
 import RecipeFiltersComponent from '../components/RecipeFilters';
 import RecipeForm from '../components/RecipeForm';
 import RecipeDetail from '../components/RecipeDetail';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 interface RecipeFilters {
   category?: string;
@@ -14,6 +15,7 @@ interface RecipeFilters {
   dietaryTags?: string[];
   search?: string;
   cuisine?: string;
+  leanRole?: string;
 }
 
 const Recipes: React.FC = () => {
@@ -24,6 +26,8 @@ const Recipes: React.FC = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [recipeToDelete, setRecipeToDelete] = useState<Recipe | null>(null);
 
   const isAdmin = state.user?.role === 'admin';
 
@@ -64,6 +68,11 @@ const Recipes: React.FC = () => {
         recipe.metadata.cuisine
           .toLowerCase()
           .includes(filters.cuisine!.toLowerCase())
+      );
+    }
+    if (filters.leanRole) {
+      filtered = filtered.filter(
+        (recipe) => recipe.leanInfo?.leanRole === filters.leanRole
       );
     }
     if (filters.search) {
@@ -145,8 +154,15 @@ const Recipes: React.FC = () => {
   };
 
   const handleDeleteRecipe = (recipe: Recipe) => {
-    if (window.confirm('Are you sure you want to delete this recipe?')) {
-      deleteRecipeMutation.mutate(recipe._id);
+    setRecipeToDelete(recipe);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (recipeToDelete) {
+      deleteRecipeMutation.mutate(recipeToDelete._id);
+      setShowDeleteModal(false);
+      setRecipeToDelete(null);
     }
   };
 
@@ -340,6 +356,17 @@ const Recipes: React.FC = () => {
           </div>
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setRecipeToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Recipe"
+        message={`Are you sure you want to delete "${recipeToDelete?.name}"? This action cannot be undone.`}
+      />
     </div>
   );
 };

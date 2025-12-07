@@ -7,6 +7,7 @@ interface RecipeFilters {
   dietaryTags?: string[];
   search?: string;
   cuisine?: string;
+  leanRole?: string;
 }
 
 interface RecipeFiltersProps {
@@ -18,13 +19,13 @@ interface RecipeFiltersProps {
 const RecipeFiltersComponent: React.FC<RecipeFiltersProps> = ({
   filters,
   onFilterChange,
-  onClearFilters
+  onClearFilters,
 }) => {
   const [metadata, setMetadata] = useState({
     categories: [],
     difficulties: [],
     dietaryTags: [],
-    cuisines: []
+    cuisines: [],
   });
   const [loading, setLoading] = useState(true);
 
@@ -46,7 +47,7 @@ const RecipeFiltersComponent: React.FC<RecipeFiltersProps> = ({
   const handleFilterChange = (key: keyof RecipeFilters, value: any) => {
     onFilterChange({
       ...filters,
-      [key]: value
+      [key]: value,
     });
   };
 
@@ -57,13 +58,13 @@ const RecipeFiltersComponent: React.FC<RecipeFiltersProps> = ({
   const handleDietaryTagToggle = (tag: string) => {
     const currentTags = filters.dietaryTags || [];
     const newTags = currentTags.includes(tag)
-      ? currentTags.filter(t => t !== tag)
+      ? currentTags.filter((t) => t !== tag)
       : [...currentTags, tag];
     handleFilterChange('dietaryTags', newTags);
   };
 
-  const hasActiveFilters = Object.values(filters).some(value => 
-    value && (Array.isArray(value) ? value.length > 0 : true)
+  const hasActiveFilters = Object.values(filters).some(
+    (value) => value && (Array.isArray(value) ? value.length > 0 : true)
   );
 
   if (loading) {
@@ -117,7 +118,9 @@ const RecipeFiltersComponent: React.FC<RecipeFiltersProps> = ({
           </label>
           <select
             value={filters.category || ''}
-            onChange={(e) => handleFilterChange('category', e.target.value || undefined)}
+            onChange={(e) =>
+              handleFilterChange('category', e.target.value || undefined)
+            }
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="">All categories</option>
@@ -136,7 +139,9 @@ const RecipeFiltersComponent: React.FC<RecipeFiltersProps> = ({
           </label>
           <select
             value={filters.difficulty || ''}
-            onChange={(e) => handleFilterChange('difficulty', e.target.value || undefined)}
+            onChange={(e) =>
+              handleFilterChange('difficulty', e.target.value || undefined)
+            }
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="">All difficulties</option>
@@ -155,7 +160,9 @@ const RecipeFiltersComponent: React.FC<RecipeFiltersProps> = ({
           </label>
           <select
             value={filters.cuisine || ''}
-            onChange={(e) => handleFilterChange('cuisine', e.target.value || undefined)}
+            onChange={(e) =>
+              handleFilterChange('cuisine', e.target.value || undefined)
+            }
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="">All cuisines</option>
@@ -164,6 +171,26 @@ const RecipeFiltersComponent: React.FC<RecipeFiltersProps> = ({
                 {cuisine}
               </option>
             ))}
+          </select>
+        </div>
+
+        {/* LEAN Role */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            LEAN Role
+          </label>
+          <select
+            value={filters.leanRole || ''}
+            onChange={(e) =>
+              handleFilterChange('leanRole', e.target.value || undefined)
+            }
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="">All roles</option>
+            <option value="Infrastructure">Infrastructure</option>
+            <option value="Process">Process</option>
+            <option value="Daily">Daily</option>
+            <option value="Treat">Treat</option>
           </select>
         </div>
 
