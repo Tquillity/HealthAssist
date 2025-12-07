@@ -1,7 +1,7 @@
 import express from 'express';
 import { Request, Response } from 'express';
 import * as educationalService from '../services/educationalService';
-import { authenticateToken } from '../middleware/auth';
+import { authenticateToken, AuthRequest } from '../middleware/auth';
 
 const router: express.Router = express.Router();
 

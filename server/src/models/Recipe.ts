@@ -152,7 +152,15 @@ const RecipeSchema = new Schema<IRecipe>(
       category: {
         type: String,
         required: true,
-        enum: ['breakfast', 'lunch', 'dinner', 'snack', 'dessert', 'beverage'],
+        enum: [
+          'breakfast',
+          'lunch',
+          'dinner',
+          'snack',
+          'dessert',
+          'beverage',
+          'sauce',
+        ],
       },
       cuisine: {
         type: String,

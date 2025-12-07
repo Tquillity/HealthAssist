@@ -584,6 +584,635 @@ const sampleRecipes = [
     householdId: 'sample_household',
     createdBy: 'system',
   },
+  {
+    name: 'Nuoc Cham (Vietnamesisk Dipsås)',
+    description:
+      "Klassisk vietnamesisk dipsås med syra, sötma och hetta. Perfekt till vårrullar, sallader eller grillat. En viktig 'Infrastructure'-sås som håller länge i kylen.",
+    imageUrl:
+      'https://images.unsplash.com/photo-1541592106381-b31e9671c0e5?w=400', // Fish sauce dip placeholder
+    ingredients: [
+      { name: 'Röd chilifrukt', quantity: 1, unit: 'st' },
+      { name: 'Vitlöksklyfta', quantity: 1, unit: 'st' },
+      { name: 'Strösocker', quantity: 5, unit: 'msk' },
+      { name: 'Vatten (kokande)', quantity: 0.5, unit: 'dl' },
+      { name: 'Fisksås', quantity: 0.5, unit: 'dl' },
+      { name: 'Limesaft', quantity: 1, unit: 'dl', notes: 'Ca 3 lime (färsk)' },
+    ],
+    instructions: [
+      'Kärna ur och strimla chilin fint.',
+      'Pressa vitlöken.',
+      'Blanda socker och chili/vitlök i en skål.',
+      'Häll över det kokande vattnet och rör tills sockret löst sig helt.',
+      'Tillsätt fisksås och limesaft.',
+      'Låt stå i kylen minst 30 minuter innan servering för att smakerna ska gifta sig.',
+    ],
+    nutrition: {
+      calories: 45, // Per serving (approx 2 tbsp)
+      protein: 1,
+      carbs: 10,
+      fat: 0,
+      fiber: 0,
+      sugar: 9,
+      sodium: 300,
+      perServing: true,
+    },
+    metadata: {
+      category: 'sauce' as const,
+      cuisine: 'Vietnamese',
+      difficulty: 'easy' as const,
+      prepTime: 10,
+      cookTime: 0,
+      servings: 8, // Yields approx 2.5 dl
+      tags: ['gluten-free', 'dairy-free', 'condiment', 'no-cook'],
+      dietaryTags: ['gluten-free', 'dairy-free'],
+    },
+    // LEAN METRICS
+    yield: {
+      amount: 2.5,
+      unit: 'dl',
+    },
+    leanInfo: {
+      batchEfficiency: 'High' as const,
+      activeWorkTime: 10,
+      passiveTime: 30, // Marinading time in fridge
+      leanRole: 'Infrastructure' as const,
+    },
+    isShared: true,
+    householdId: 'sample_household',
+    createdBy: 'system',
+  },
+  {
+    name: 'Jordnötssås med Kokosmjölk',
+    description:
+      'Krämig jordnötssås med röd curry och kokosmjölk. Serveras varm eller kall.',
+    imageUrl:
+      'https://images.unsplash.com/photo-1620574387735-3624d75b2dbc?w=400', // Peanut sauce placeholder
+    ingredients: [
+      { name: 'Jordnötssmör (osötad, med bitar)', quantity: 0.5, unit: 'dl' },
+      { name: 'Kokosmjölk', quantity: 100, unit: 'ml' },
+      { name: 'Lök', quantity: 0.5, unit: 'st' },
+      { name: 'Vitlöksklyfta', quantity: 1, unit: 'st' },
+      { name: 'Ingefära (finhackad)', quantity: 1, unit: 'tsk' },
+      {
+        name: 'Röd chili',
+        quantity: 1,
+        unit: 'st',
+        notes: 'Valfritt för hetta',
+      },
+      { name: 'Röd curry eller Sambal Oelek', quantity: 1, unit: 'tsk' },
+      { name: 'Palmsocker (eller råsocker/honung)', quantity: 2, unit: 'tsk' },
+      { name: 'Soja', quantity: 2, unit: 'tsk' },
+      { name: 'Salt', quantity: 1, unit: 'krm', notes: 'Efter smak' },
+      { name: 'Olja', quantity: 1, unit: 'msk', notes: 'Till stekning' },
+    ],
+    instructions: [
+      'Hacka lök, vitlök, ingefära och chili.',
+      'Stek hacket i olja på medelvärme tills löken mjuknar.',
+      'Tillsätt röd curry/sambal oelek och fräs några sekunder för att väcka smakerna.',
+      'Sänk värmen och vänd i jordnötssmöret.',
+      'Mixa samman allting med en stavmixer (eller i mixer).',
+      'Häll tillbaka i kastrullen och tillsätt kokosmjölk, socker och soja. Salta efter smak.',
+      'Koka upp såsen och låt puttra i ca 3-5 minuter. Rör om ofta så det inte bränns.',
+      'Om såsen känns för tjock, späd med mer kokosmjölk eller lite vatten.',
+      'Servera kall eller varm.',
+    ],
+    nutrition: {
+      calories: 180, // Per serving
+      protein: 4,
+      carbs: 8,
+      fat: 15,
+      fiber: 2,
+      sugar: 4,
+      sodium: 200,
+      perServing: true,
+    },
+    metadata: {
+      category: 'sauce' as const,
+      cuisine: 'Asian Fusion',
+      difficulty: 'medium' as const,
+      prepTime: 15,
+      cookTime: 5,
+      servings: 4,
+      tags: ['vegetarian', 'condiment', 'peanut'],
+      dietaryTags: ['vegetarian', 'dairy-free'],
+    },
+    // LEAN METRICS
+    yield: {
+      amount: 2,
+      unit: 'dl',
+    },
+    leanInfo: {
+      batchEfficiency: 'Medium' as const,
+      activeWorkTime: 20,
+      passiveTime: 0,
+      leanRole: 'Infrastructure' as const,
+    },
+    isShared: true,
+    householdId: 'sample_household',
+    createdBy: 'system',
+  },
+  {
+    name: 'Sötpotatisrösti med Lingon',
+    description:
+      'Paleo/AIP-vänlig vardagsrätt. Riven sötpotatis stekt till raggmunkar, serverad med rårörda lingon. Enkel och näringsrik.',
+    imageUrl:
+      'https://images.unsplash.com/photo-1534939561126-855429181dc7?w=400', // Sweet potato fritter placeholder
+    ingredients: [
+      { name: 'Sötpotatis', quantity: 1, unit: 'st' },
+      { name: 'Vitlöksklyfta', quantity: 1, unit: 'st' },
+      { name: 'Havssalt', quantity: 1, unit: 'nypa', notes: 'Lite' },
+      {
+        name: 'Färska kryddor (timjan eller persilja)',
+        quantity: 1,
+        unit: 'knippe',
+        notes: 'Lite',
+      },
+      { name: 'Lingon', quantity: 1, unit: 'dl' },
+      { name: 'Honung', quantity: 1, unit: 'tsk' },
+      { name: 'Kokosolja', quantity: 1, unit: 'msk', notes: 'Till stekning' },
+    ],
+    instructions: [
+      'Skala och riv sötpotatisen grovt. Krama ur vätskan ordentligt.',
+      'Pressa i vitlök och blanda med salt och färska kryddor.',
+      'Hetta upp kokosolja i en panna. Klicka ut smeten och platta till.',
+      'Stek ca två minuter per sida tills de fått fin färg.',
+      'Rårörda lingon: Tina frysta lingon (om de inte är färska) och blanda med honung.',
+      'Servera röstin med lingonen.',
+    ],
+    nutrition: {
+      calories: 350,
+      protein: 4,
+      carbs: 60,
+      fat: 10,
+      fiber: 8,
+      sugar: 15,
+      sodium: 300,
+      perServing: true,
+    },
+    metadata: {
+      category: 'lunch' as const,
+      cuisine: 'Paleo/Swedish',
+      difficulty: 'easy' as const,
+      prepTime: 15,
+      cookTime: 10,
+      servings: 1,
+      tags: ['paleo', 'aip', 'vegetarian', 'gluten-free', 'dairy-free'],
+      dietaryTags: ['vegetarian', 'gluten-free', 'dairy-free'],
+    },
+    // LEAN METRICS
+    yield: {
+      amount: 1,
+      unit: 'portion',
+    },
+    leanInfo: {
+      batchEfficiency: 'Low' as const, // Frying individual fritters is active work
+      activeWorkTime: 20,
+      passiveTime: 0,
+      leanRole: 'Daily' as const,
+    },
+    isShared: true,
+    householdId: 'sample_household',
+    createdBy: 'system',
+  },
+  {
+    name: 'Pinklax-sås med Stekt Potatis',
+    description:
+      "Krämig laxsås smaksatt med kryddblandningen 'Neptuns dröm' och citron, serverad med stekt potatis.",
+    imageUrl: 'https://images.unsplash.com/photo-1555989302-3839ee422982?w=400', // Creamy salmon placeholder
+    ingredients: [
+      {
+        name: 'Potatis (medelstora)',
+        quantity: 18,
+        unit: 'st',
+        notes: '15-20 st, kokta/kalla',
+      },
+      { name: 'Pinklax (bitar)', quantity: 5, unit: 'st', notes: '4-5 bitar' },
+      { name: 'Rödlök (liten)', quantity: 1, unit: 'st' },
+      {
+        name: 'Grädde (eller kokosgrädde)',
+        quantity: 2,
+        unit: 'dl',
+        notes: '1-2 dl',
+      },
+      {
+        name: 'Viltfond (alt. grönsaksfond)',
+        quantity: 2,
+        unit: 'msk',
+        notes: 'Om grönsaksfond, tillsätt lite soja',
+      },
+      { name: 'Salt', quantity: 2.5, unit: 'tsk', notes: '2-3 tsk' },
+      {
+        name: "Krydda 'Neptuns dröm'",
+        quantity: 1.5,
+        unit: 'tsk',
+        notes: '1-2 tsk',
+      },
+      { name: 'Citron', quantity: 1.5, unit: 'msk', notes: '1-2 msk' },
+      { name: 'Smör/Olja', quantity: 2, unit: 'msk', notes: 'Till stekning' },
+      {
+        name: 'Grönsaker (Ärtor/Majs/Paprika)',
+        quantity: 3,
+        unit: 'dl',
+        notes: 'Ångkokta/kokta',
+      },
+    ],
+    instructions: [
+      "Förberedelse: Använd kokt, kall potatis. Dela och stek dem i smör/olja ('Smörstek tärnad potatis').",
+      "Krydda fisken med ca 1 tsk salt och 'Neptuns dröm'.",
+      "Stek fisken i smör så den får yta, dela den i små bitar ('färs'-storlek). Ta ur pannan.",
+      'Hacka rödlöken fint. Fräs den i pannan.',
+      'Häll i grädden och citron. Låt stå och puttra.',
+      'Tillsätt fond och vispa ur smakerna ur stekpannan om det behövs.',
+      'Lägg tillbaka fisken i såsen så den blir genomvarm.',
+      'Smaka av med salt och mer citron.',
+      'Servera med den stekta potatisen och kokta grönsaker.',
+    ],
+    nutrition: {
+      calories: 650,
+      protein: 35,
+      carbs: 55,
+      fat: 30,
+      fiber: 6,
+      sugar: 4,
+      sodium: 800,
+      perServing: true,
+    },
+    metadata: {
+      category: 'dinner' as const,
+      cuisine: 'Swedish',
+      difficulty: 'medium' as const,
+      prepTime: 20,
+      cookTime: 30,
+      servings: 4,
+      tags: ['fish', 'creamy', 'comfort-food'],
+      dietaryTags: ['gluten-free'],
+    },
+    yield: {
+      amount: 4,
+      unit: 'portioner',
+    },
+    leanInfo: {
+      batchEfficiency: 'Medium' as const,
+      activeWorkTime: 30,
+      passiveTime: 0,
+      leanRole: 'Daily' as const,
+    },
+    isShared: true,
+    householdId: 'sample_household',
+    createdBy: 'system',
+  },
+  {
+    name: 'Krämig Fisksoppa med Saffran (Mejerifri)',
+    description:
+      'Mustig fisksoppa med lax, torsk och räkor. Basen görs på rotfrukter, vitt vin och saffran. Rundas av med kokosgrädde för en fyllig, mejerifri soppa.',
+    imageUrl:
+      'https://images.unsplash.com/photo-1594041680534-e8c8cdebd659?w=400', // Fish soup placeholder
+    ingredients: [
+      { name: 'Gul lök', quantity: 2, unit: 'st' },
+      { name: 'Vitlök', quantity: 6, unit: 'st' },
+      { name: 'Purjolök', quantity: 1, unit: 'st' },
+      { name: 'Potatis', quantity: 800, unit: 'g' },
+      { name: 'Morötter', quantity: 600, unit: 'g' },
+      { name: 'Fänkål färsk', quantity: 1, unit: 'st' },
+      { name: 'Olivolja', quantity: 2, unit: 'msk' },
+      { name: 'Mat & Bak Smör (eller Ghee)', quantity: 2, unit: 'msk' },
+      { name: 'Saffran', quantity: 2, unit: 'g' },
+      { name: 'Chiliflakes', quantity: 2, unit: 'tsk' },
+      { name: 'Tomatpuré', quantity: 4, unit: 'msk' },
+      { name: 'Vitt vin', quantity: 6, unit: 'dl' },
+      { name: 'Vatten', quantity: 1, unit: 'l' },
+      {
+        name: 'Kokosgrädde',
+        quantity: 6,
+        unit: 'dl',
+        notes: 'Ersätter vispgrädde',
+      },
+      { name: 'Fiskfond (eller buljongtärning)', quantity: 4, unit: 'msk' },
+      { name: 'Laxfilé (färsk)', quantity: 600, unit: 'g' },
+      { name: 'Torskfilé', quantity: 600, unit: 'g' },
+      { name: 'Handskalade räkor', quantity: 480, unit: 'g' },
+      { name: 'Timjan (färsk)', quantity: 1, unit: 'msk' },
+      { name: 'Citron', quantity: 1, unit: 'st' },
+      { name: 'Salt', quantity: 1, unit: 'krm', notes: 'Smaka av' },
+      { name: 'Svartpeppar', quantity: 1, unit: 'krm' },
+    ],
+    instructions: [
+      'Skala och finhacka lök och vitlök. Skölj och grovhacka purjolök. Skala och tärna potatis, morötter och skölj/grovhacka fänkål.',
+      'Hetta upp olja och smör/ghee i en stor kastrull. Fräs lök, vitlök, purjolök, fänkål, potatis och morötter tills det mjuknar något. Tillsätt saffran och chiliflakes.',
+      'Tillsätt tomatpuré och fräs i 30 sekunder under omrörning.',
+      'Tillsätt vitt vin och låt puttra i ca 4-5 min.',
+      'Tillsätt vatten, kokosgrädde och fond. Låt soppan sjuda under lock i ca 20 min (tills rotfrukterna är mjuka).',
+      'Tärna laxen och torsken. Lägg i soppan och låt sjuda i ca 5 min.',
+      'Lägg ner räkor, timjan och smaka av med citronsaft, salt och peppar.',
+      'Servera med ett gott bröd och ev. aioli.',
+    ],
+    nutrition: {
+      calories: 580,
+      protein: 45,
+      carbs: 30,
+      fat: 38,
+      fiber: 6,
+      sugar: 5,
+      sodium: 900,
+      perServing: true,
+    },
+    metadata: {
+      category: 'dinner' as const,
+      cuisine: 'French/Swedish',
+      difficulty: 'medium' as const,
+      prepTime: 30,
+      cookTime: 30,
+      servings: 8,
+      tags: [
+        'soup',
+        'seafood',
+        'batch-friendly',
+        'dairy-free',
+        'luxury-weekend',
+      ],
+      dietaryTags: ['gluten-free', 'dairy-free'],
+    },
+    yield: {
+      amount: 8,
+      unit: 'portioner',
+    },
+    leanInfo: {
+      batchEfficiency: 'High' as const, // Excellent for large batches
+      activeWorkTime: 30, // Chopping veggies
+      passiveTime: 30, // Simmering
+      leanRole: 'Daily' as const,
+    },
+    isShared: true,
+    householdId: 'sample_household',
+    createdBy: 'system',
+  },
+  {
+    name: 'Bananpannkaka (Enkel)',
+    description:
+      'Snabba och nyttiga pannkakor gjorda på banan, ägg och mandelmjöl. Perfekt frukost eller mellanmål.',
+    imageUrl:
+      'https://images.unsplash.com/photo-1575853121743-60c24f0a7502?w=400', // Banana pancake placeholder
+    ingredients: [
+      { name: 'Banan', quantity: 0.5, unit: 'st', notes: 'Mogen' },
+      { name: 'Ägg', quantity: 2, unit: 'st' },
+      { name: 'Mandelmjöl', quantity: 0.5, unit: 'dl' },
+      { name: 'Vaniljpulver', quantity: 1, unit: 'nypa' },
+      { name: 'Bakpulver', quantity: 1, unit: 'krm', notes: 'Valfritt' },
+      { name: 'Smör', quantity: 1, unit: 'msk', notes: 'Till stekning' },
+      {
+        name: 'Bär & Honung',
+        quantity: 1,
+        unit: 'portion',
+        notes: 'Till servering',
+      },
+    ],
+    instructions: [
+      'Mosa bananen eller mixa den.',
+      'Vispa ihop banan, ägg, mandelmjöl, vaniljpulver och eventuellt bakpulver.',
+      'Hetta upp smör i en stekpanna.',
+      'Stek på medelvärme. (Receptet ger ca två stora pannkakor eller flera små).',
+      'Servera med bär och lite smält honung.',
+    ],
+    nutrition: {
+      calories: 350,
+      protein: 14,
+      carbs: 18,
+      fat: 25,
+      fiber: 4,
+      sugar: 10,
+      sodium: 150,
+      perServing: true,
+    },
+    metadata: {
+      category: 'breakfast' as const,
+      cuisine: 'Modern/Health',
+      difficulty: 'easy' as const,
+      prepTime: 5,
+      cookTime: 10,
+      servings: 1, // Receptet säger "ger två stycken stora", men ingredienserna motsvarar 1 rejäl portion
+      tags: ['gluten-free', 'dairy-free', 'paleo-friendly', 'quick'],
+      dietaryTags: ['gluten-free', 'dairy-free'],
+    },
+    yield: {
+      amount: 2,
+      unit: 'st',
+    },
+    leanInfo: {
+      batchEfficiency: 'Low' as const, // Cooked fresh
+      activeWorkTime: 15,
+      passiveTime: 0,
+      leanRole: 'Daily' as const,
+    },
+    isShared: true,
+    householdId: 'sample_household',
+    createdBy: 'system',
+  },
+  {
+    name: 'Chocolate Chip Cookies (Raw/No-Bake)',
+    description:
+      'Hälsosamma kakor baserade på cashewnötter och hemmagjorda chokladchips. Behöver ingen ugn, men chokladen ska stelna.',
+    imageUrl:
+      'https://images.unsplash.com/photo-1499636138143-bd630f5cf386?w=400', // Cookie placeholder
+    ingredients: [
+      {
+        name: 'Cashewnötter',
+        quantity: 3,
+        unit: 'dl',
+        notes: 'Eller hälften mandel/solrosfrön',
+      },
+      { name: 'Agavenektar (eller honung)', quantity: 2, unit: 'msk' },
+      { name: 'Vaniljpulver', quantity: 1, unit: 'tsk' },
+      { name: 'Kokosfett (smält/mjukt)', quantity: 2, unit: 'msk' },
+      { name: 'Havssalt', quantity: 1, unit: 'nypa' },
+      { name: 'Rå kakao (till chips)', quantity: 0.5, unit: 'dl' },
+      {
+        name: 'Kokosolja (till chips)',
+        quantity: 1,
+        unit: 'msk',
+        notes: 'Eller kakaosmör',
+      },
+    ],
+    instructions: [
+      'Chokladchips: Blanda kakao och kokosolja/kakaosmör (ev sötning). Bred ut tunt på bakplåtspapper och frys tills det stelnat. Hacka i bitar.',
+      'Mixa cashewnötterna till mjöl i en mixer.',
+      'Blanda i en bunke: nötmjöl, sötning, vanilj, kokosfett och salt. Arbeta ihop till en deg.',
+      'När chokladkrosset är kallt/stelnat, blanda ner det i degen.',
+      'Rulla bollar och platta ut till kakor på en tallrik eller plåt.',
+      'Ställ kallt en stund innan servering. (Kan ätas direkt men godare kalla).',
+    ],
+    nutrition: {
+      calories: 120, // Per cookie approx
+      protein: 3,
+      carbs: 8,
+      fat: 9,
+      fiber: 1,
+      sugar: 4,
+      sodium: 20,
+      perServing: true,
+    },
+    metadata: {
+      category: 'snack' as const,
+      cuisine: 'Raw Food',
+      difficulty: 'medium' as const,
+      prepTime: 20,
+      cookTime: 0,
+      servings: 12, // Estimated yield
+      tags: ['raw', 'vegan', 'gluten-free', 'no-bake', 'treat'],
+      dietaryTags: ['vegan', 'gluten-free', 'dairy-free'],
+    },
+    yield: {
+      amount: 12,
+      unit: 'st',
+    },
+    leanInfo: {
+      batchEfficiency: 'Medium' as const,
+      activeWorkTime: 20,
+      passiveTime: 30, // Cooling time for chocolate
+      leanRole: 'Infrastructure' as const, // Makes a batch for storage
+    },
+    isShared: true,
+    householdId: 'sample_household',
+    createdBy: 'system',
+  },
+  {
+    name: 'Osannolikt God Raw Vegan Cheesecake',
+    description:
+      "En lyxig raw-fika från 'Smartamaten'. Botten på mandel/dadlar och en krämig fyllning på cashewnötter och citron.",
+    imageUrl:
+      'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400', // Raw cake placeholder
+    ingredients: [
+      // Botten
+      { name: 'Sötmandel', quantity: 100, unit: 'g' },
+      { name: 'Dadlar', quantity: 75, unit: 'g', notes: 'Urkärnade' },
+      // Fyllning
+      { name: 'Cashewnötter', quantity: 200, unit: 'g' },
+      { name: 'Vatten', quantity: 3, unit: 'msk' },
+      { name: 'Citronsaft (pressad)', quantity: 3, unit: 'msk' },
+      {
+        name: 'Honung (eller vaniljpulver)',
+        quantity: 2,
+        unit: 'msk',
+        notes: 'Raw honung för strikt raw',
+      },
+      { name: 'Vaniljpulver', quantity: 0.5, unit: 'tsk' },
+      // Topping
+      {
+        name: 'Bär (valfria)',
+        quantity: 1.5,
+        unit: 'dl',
+        notes: 'Att toppa med',
+      },
+    ],
+    instructions: [
+      'Botten: Kör sötmandlar och dadlar i en mixer med S-blad till en deg.',
+      'Klä en liten springform (16-17 cm) med gladpack. Tryck ut degen jämnt i formen.',
+      "Fyllning ('Ostmassa'): Kör cashewnötter till så fint mjöl som möjligt i blender/mixer.",
+      'Tillsätt vatten, pressad citron, honung och vaniljpulver i mixern. Kör tills det blir en slät kräm/fyllning.',
+      'Bred ut fyllningen över botten.',
+      'Låt gärna kakan stå i kylen en timme eller två så blir den lättare att skära upp.',
+      'Topping: Lägg på valfria bär när det är dags att servera.',
+    ],
+    nutrition: {
+      calories: 450, // Per piece (rich!)
+      protein: 12,
+      carbs: 35,
+      fat: 30,
+      fiber: 6,
+      sugar: 25,
+      sodium: 10,
+      perServing: true,
+    },
+    metadata: {
+      category: 'dessert' as const,
+      cuisine: 'Raw Food',
+      difficulty: 'medium' as const,
+      prepTime: 25,
+      cookTime: 0,
+      servings: 6, // Small rich pieces
+      tags: ['raw', 'vegan', 'gluten-free', 'luxury', 'party'],
+      dietaryTags: ['vegan', 'gluten-free', 'dairy-free'],
+    },
+    yield: {
+      amount: 1,
+      unit: 'kaka',
+    },
+    leanInfo: {
+      batchEfficiency: 'High' as const,
+      activeWorkTime: 25,
+      passiveTime: 60, // Setting time in fridge
+      leanRole: 'Infrastructure' as const, // Made in advance
+    },
+    isShared: true,
+    householdId: 'sample_household',
+    createdBy: 'system',
+  },
+  {
+    name: 'Citron- och Marängpaj',
+    description:
+      'Klassisk sötsyrlig paj med frasig botten, len citronkräm och fluffig maräng. En lyxig dessert som kräver lite tid men är värd besväret.',
+    imageUrl:
+      'https://images.unsplash.com/photo-1519915028121-7d3463d20b13?w=400', // Lemon meringue pie placeholder
+    ingredients: [
+      // Pajdeg
+      { name: 'Vetemjöl', quantity: 3, unit: 'dl', notes: 'Till pajdeg' },
+      { name: 'Smör', quantity: 150, unit: 'g', notes: 'Till pajdeg' },
+      { name: 'Ägg', quantity: 1, unit: 'st', notes: 'Till pajdeg' },
+      // Citronkräm
+      { name: 'Vatten', quantity: 3, unit: 'dl' },
+      { name: 'Strösocker', quantity: 1.5, unit: 'dl', notes: 'Till krämen' },
+      { name: 'Majsstärkelse (Maizena)', quantity: 4, unit: 'msk' },
+      { name: 'Citroner', quantity: 2, unit: 'st', notes: 'Saft och skal' },
+      { name: 'Äggulor', quantity: 3, unit: 'st' },
+      { name: 'Smör', quantity: 2, unit: 'msk', notes: 'Till krämen' },
+      // Maräng
+      { name: 'Äggvitor', quantity: 3, unit: 'st' },
+      { name: 'Strösocker', quantity: 0.5, unit: 'dl', notes: 'Till marängen' },
+    ],
+    instructions: [
+      'PAJDEG: Hacka samman mjöl och smör till en grynig massa. Tillsätt ägget och arbeta snabbt ihop till en deg.',
+      'Tryck ut degen i en rund form (ca 25 cm). Låt vila i kylen i 15 minuter.',
+      'Nagga botten och förgrädda i mitten av ugnen i 225°C i ca 15 minuter. Låt svalna.',
+      'CITRONKRÄM: Blanda vatten, socker, majsstärkelse och pressad citronsaft i en kastrull. Koka upp under omrörning.',
+      'Dra av från plattan. Rör ner äggulorna. Sjud upp krämen igen under omrörning tills den tjocknar (får ej koka!).',
+      'Blanda i rivet citronskal och smör (2 msk). Låt krämen svalna något och häll den sedan i pajskalet.',
+      'MARÄNG: Vispa äggvitorna till hårt skum. Tillsätt sockret och vispa tills smeten är styv.',
+      'Bred marängen över citronkrämen (se till att den täcker ända ut till kanterna).',
+      'Grädda mitt i ugnen i 175°C i ca 10 minuter tills marängen fått fin färg.',
+    ],
+    nutrition: {
+      calories: 420, // Per slice
+      protein: 6,
+      carbs: 55,
+      fat: 20,
+      fiber: 1,
+      sugar: 35,
+      sodium: 150,
+      perServing: true,
+    },
+    metadata: {
+      category: 'dessert' as const,
+      cuisine: 'French/Swedish',
+      difficulty: 'hard' as const, // Multi-stage process
+      prepTime: 45,
+      cookTime: 25, // 15 min base + 10 min meringue
+      servings: 8,
+      tags: ['baking', 'citrus', 'party', 'classic'],
+      dietaryTags: ['vegetarian'],
+    },
+    yield: {
+      amount: 1,
+      unit: 'paj',
+    },
+    leanInfo: {
+      batchEfficiency: 'Low' as const, // Complex single-item production
+      activeWorkTime: 45,
+      passiveTime: 45, // Cooling steps + oven
+      leanRole: 'Treat' as const,
+    },
+    isShared: true,
+    householdId: 'sample_household',
+    createdBy: 'system',
+  },
 ];
 
 async function seedDatabase() {

@@ -139,7 +139,8 @@ export interface Recipe {
       | 'dinner'
       | 'snack'
       | 'dessert'
-      | 'beverage';
+      | 'beverage'
+      | 'sauce';
     cuisine: string;
     difficulty: 'easy' | 'medium' | 'hard';
     prepTime: number;
