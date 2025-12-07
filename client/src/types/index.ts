@@ -153,6 +153,16 @@ export interface Recipe {
   createdBy: string;
   createdAt: string;
   updatedAt: string;
+  yield?: {
+    amount: number;
+    unit: string;
+  };
+  leanInfo?: {
+    batchEfficiency: 'High' | 'Medium' | 'Low';
+    activeWorkTime: number;
+    passiveTime: number;
+    leanRole: 'Infrastructure' | 'Process' | 'Daily' | 'Treat';
+  };
 }
 
 // Meal Plan types

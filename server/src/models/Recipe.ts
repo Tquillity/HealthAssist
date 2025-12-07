@@ -26,7 +26,13 @@ export interface IRecipe extends Document {
   instructions: string[];
   nutrition: INutritionInfo;
   metadata: {
-    category: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'dessert' | 'beverage';
+    category:
+      | 'breakfast'
+      | 'lunch'
+      | 'dinner'
+      | 'snack'
+      | 'dessert'
+      | 'beverage';
     cuisine: string;
     difficulty: 'easy' | 'medium' | 'hard';
     prepTime: number; // in minutes
@@ -40,147 +46,181 @@ export interface IRecipe extends Document {
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
+  yield?: {
+    amount: number;
+    unit: string;
+  };
+  leanInfo?: {
+    batchEfficiency: 'High' | 'Medium' | 'Low';
+    activeWorkTime: number;
+    passiveTime: number;
+    leanRole: 'Infrastructure' | 'Process' | 'Daily' | 'Treat';
+  };
 }
 
-const RecipeSchema = new Schema<IRecipe>({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: 100
-  },
-  description: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: 500
-  },
-  imageUrl: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  ingredients: [{
+const RecipeSchema = new Schema<IRecipe>(
+  {
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      maxlength: 100,
     },
-    quantity: {
-      type: Number,
-      required: true,
-      min: 0
-    },
-    unit: {
+    description: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      maxlength: 500,
     },
-    notes: {
+    imageUrl: {
       type: String,
-      trim: true
-    }
-  }],
-  instructions: [{
-    type: String,
-    required: true,
-    trim: true
-  }],
-  nutrition: {
-    calories: {
-      type: Number,
       required: true,
-      min: 0
+      trim: true,
     },
-    protein: {
-      type: Number,
-      required: true,
-      min: 0
+    ingredients: [
+      {
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+          min: 0,
+        },
+        unit: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        notes: {
+          type: String,
+          trim: true,
+        },
+      },
+    ],
+    instructions: [
+      {
+        type: String,
+        required: true,
+        trim: true,
+      },
+    ],
+    nutrition: {
+      calories: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      protein: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      carbs: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      fat: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      fiber: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+      sugar: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+      sodium: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+      perServing: {
+        type: Boolean,
+        default: true,
+      },
     },
-    carbs: {
-      type: Number,
-      required: true,
-      min: 0
+    metadata: {
+      category: {
+        type: String,
+        required: true,
+        enum: ['breakfast', 'lunch', 'dinner', 'snack', 'dessert', 'beverage'],
+      },
+      cuisine: {
+        type: String,
+        trim: true,
+      },
+      difficulty: {
+        type: String,
+        required: true,
+        enum: ['easy', 'medium', 'hard'],
+      },
+      prepTime: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      cookTime: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      servings: {
+        type: Number,
+        required: true,
+        min: 1,
+      },
+      tags: [
+        {
+          type: String,
+          trim: true,
+        },
+      ],
+      dietaryTags: [
+        {
+          type: String,
+          trim: true,
+        },
+      ],
     },
-    fat: {
-      type: Number,
-      required: true,
-      min: 0
-    },
-    fiber: {
-      type: Number,
-      default: 0,
-      min: 0
-    },
-    sugar: {
-      type: Number,
-      default: 0,
-      min: 0
-    },
-    sodium: {
-      type: Number,
-      default: 0,
-      min: 0
-    },
-    perServing: {
+    isShared: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
+    householdId: {
+      type: String,
+      required: true,
+    },
+    createdBy: {
+      type: String,
+      required: true,
+    },
+    yield: {
+      amount: Number,
+      unit: String,
+    },
+    leanInfo: {
+      batchEfficiency: { type: String, enum: ['High', 'Medium', 'Low'] },
+      activeWorkTime: Number,
+      passiveTime: Number,
+      leanRole: {
+        type: String,
+        enum: ['Infrastructure', 'Process', 'Daily', 'Treat'],
+      },
+    },
   },
-  metadata: {
-    category: {
-      type: String,
-      required: true,
-      enum: ['breakfast', 'lunch', 'dinner', 'snack', 'dessert', 'beverage']
-    },
-    cuisine: {
-      type: String,
-      trim: true
-    },
-    difficulty: {
-      type: String,
-      required: true,
-      enum: ['easy', 'medium', 'hard']
-    },
-    prepTime: {
-      type: Number,
-      required: true,
-      min: 0
-    },
-    cookTime: {
-      type: Number,
-      required: true,
-      min: 0
-    },
-    servings: {
-      type: Number,
-      required: true,
-      min: 1
-    },
-    tags: [{
-      type: String,
-      trim: true
-    }],
-    dietaryTags: [{
-      type: String,
-      trim: true
-    }]
-  },
-  isShared: {
-    type: Boolean,
-    default: true
-  },
-  householdId: {
-    type: String,
-    required: true
-  },
-  createdBy: {
-    type: String,
-    required: true
+  {
+    timestamps: true,
   }
-}, {
-  timestamps: true
-});
+);
 
 // Indexes for efficient querying
 RecipeSchema.index({ householdId: 1, isShared: 1 });

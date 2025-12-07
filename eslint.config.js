@@ -73,6 +73,12 @@ export default [
     languageOptions: {
       globals: { node: true, es2020: true },
     },
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
+    },
   },
   prettierConfig, // Must be last to override other configs
 ];
