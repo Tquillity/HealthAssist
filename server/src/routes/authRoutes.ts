@@ -137,6 +137,7 @@ router.post('/register', validate(registerSchema), async (req, res) => {
         username: user.username,
         email: user.email,
         householdId: user.householdId,
+        role: user.role,
         profile: user.profile,
       },
     });
@@ -185,6 +186,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
         username: user.username,
         email: user.email,
         householdId: user.householdId,
+        role: user.role,
         profile: user.profile,
         preferences: user.preferences,
       },
@@ -292,6 +294,7 @@ router.get(
             username: user.username,
             email: user.email,
             householdId: user.householdId,
+            role: user.role,
             profile: user.profile,
           })
         )}`
@@ -337,6 +340,7 @@ router.get(
             username: user.username,
             email: user.email,
             householdId: user.householdId,
+            role: user.role,
             profile: user.profile,
           })
         )}`
