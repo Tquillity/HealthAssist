@@ -209,7 +209,7 @@ const sampleRecipes = [
       dietaryTags: ['vegetarian', 'gluten-free'],
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -255,7 +255,7 @@ const sampleRecipes = [
       dietaryTags: ['vegetarian', 'gluten-free'],
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -304,7 +304,7 @@ const sampleRecipes = [
       dietaryTags: ['gluten-free', 'dairy-free'],
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -350,7 +350,7 @@ const sampleRecipes = [
       dietaryTags: ['vegetarian', 'gluten-free'],
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -399,7 +399,7 @@ const sampleRecipes = [
       dietaryTags: ['vegetarian', 'vegan', 'gluten-free'],
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -443,7 +443,7 @@ const sampleRecipes = [
       dietaryTags: ['vegetarian', 'gluten-free'],
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -513,7 +513,7 @@ const sampleRecipes = [
       leanRole: 'Infrastructure' as const,
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -581,7 +581,7 @@ const sampleRecipes = [
       leanRole: 'Infrastructure' as const,
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -638,7 +638,7 @@ const sampleRecipes = [
       leanRole: 'Infrastructure' as const,
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -708,7 +708,7 @@ const sampleRecipes = [
       leanRole: 'Infrastructure' as const,
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -771,7 +771,7 @@ const sampleRecipes = [
       leanRole: 'Daily' as const,
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -858,7 +858,7 @@ const sampleRecipes = [
       leanRole: 'Daily' as const,
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -943,7 +943,7 @@ const sampleRecipes = [
       leanRole: 'Daily' as const,
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -1004,7 +1004,7 @@ const sampleRecipes = [
       leanRole: 'Daily' as const,
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -1071,7 +1071,7 @@ const sampleRecipes = [
       leanRole: 'Infrastructure' as const, // Makes a batch for storage
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -1143,7 +1143,7 @@ const sampleRecipes = [
       leanRole: 'Infrastructure' as const, // Made in advance
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
   {
@@ -1210,7 +1210,7 @@ const sampleRecipes = [
       leanRole: 'Treat' as const,
     },
     isShared: true,
-    householdId: 'sample_household',
+    householdId: 'admin_household',
     createdBy: 'system',
   },
 ];
@@ -1346,7 +1346,7 @@ async function seedDatabase() {
         username: 'testuser',
         email: userEmail,
         password: hashedPassword,
-        householdId: 'sample_household',
+        householdId: 'admin_household',
         role: 'user',
         profile: {
           firstName: 'Test',

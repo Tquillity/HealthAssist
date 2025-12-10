@@ -7,7 +7,8 @@ import RecipeCard from '../components/RecipeCard';
 import RecipeFiltersComponent from '../components/RecipeFilters';
 import RecipeForm from '../components/RecipeForm';
 import RecipeDetail from '../components/RecipeDetail';
-import ConfirmationModal from '../components/ConfirmationModal';
+import SafeDeleteModal from '../components/SafeDeleteModal';
+import RecipeListView from '../components/RecipeListView';
 
 interface RecipeFilters {
   category?: string;
@@ -26,8 +27,13 @@ const Recipes: React.FC = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
+
+  // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [recipeToDelete, setRecipeToDelete] = useState<Recipe | null>(null);
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState<'database' | 'list'>('database');
 
   const isAdmin = state.user?.role === 'admin';
 
@@ -255,34 +261,6 @@ const Recipes: React.FC = () => {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="mb-8">
-        <RecipeFiltersComponent
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onClearFilters={clearFilters}
-        />
-      </div>
-
-      {/* Results Count */}
-      <div className="flex items-center justify-between mb-6">
-        <p className="text-gray-600">
-          {filteredRecipes.length} recipe
-          {filteredRecipes.length !== 1 ? 's' : ''} found
-        </p>
-        {Object.values(filters).some(
-          (value) => value && (Array.isArray(value) ? value.length > 0 : true)
-        ) && (
-          <button
-            onClick={clearFilters}
-            className="text-primary-600 hover:text-primary-700 font-medium"
-          >
-            Clear filters
-          </button>
-        )}
-      </div>
-
-      {/* Recipes Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
@@ -308,56 +286,90 @@ const Recipes: React.FC = () => {
             Retry
           </button>
         </div>
-      ) : filteredRecipes.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredRecipes.map((recipe) => (
-            <RecipeCard
-              key={recipe._id}
-              recipe={recipe}
-              onClick={() => handleRecipeClick(recipe)}
-              onEdit={isAdmin ? () => handleEditRecipe(recipe) : undefined}
-              onDelete={isAdmin ? () => handleDeleteRecipe(recipe) : undefined}
-              showActions={isAdmin}
-            />
-          ))}
-        </div>
       ) : (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">🍽️</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            No recipes found
-          </h3>
-          <p className="text-gray-600 mb-6">
-            {Object.values(filters).some(
-              (value) =>
-                value && (Array.isArray(value) ? value.length > 0 : true)
-            )
-              ? 'Try adjusting your filters or clear them to see all available recipes.'
-              : 'Start by adding your first recipe to your collection.'}
-          </p>
-          <div className="space-x-4">
-            {Object.values(filters).some(
-              (value) =>
-                value && (Array.isArray(value) ? value.length > 0 : true)
-            ) && (
-              <button
-                onClick={clearFilters}
-                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                Clear Filters
-              </button>
-            )}
-            <button
-              onClick={() => setShowForm(true)}
-              className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
-            >
-              Add Your First Recipe
-            </button>
-          </div>
-        </div>
+        <>
+          {activeTab === 'database' && (
+            <>
+              {/* Filters */}
+              <div className="mb-8">
+                <RecipeFiltersComponent
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                  onClearFilters={clearFilters}
+                />
+              </div>
+
+              {/* Results Count */}
+              <div className="flex items-center justify-between mb-6">
+                <p className="text-gray-600">
+                  {filteredRecipes.length} recipe
+                  {filteredRecipes.length !== 1 ? 's' : ''} found
+                </p>
+                {Object.values(filters).some(
+                  (value) =>
+                    value && (Array.isArray(value) ? value.length > 0 : true)
+                ) && (
+                  <button
+                    onClick={clearFilters}
+                    className="text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    Clear filters
+                  </button>
+                )}
+              </div>
+
+              {/* Recipes Grid */}
+              {filteredRecipes.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredRecipes.map((recipe) => (
+                    <RecipeCard
+                      key={recipe._id}
+                      recipe={recipe}
+                      onClick={() => handleRecipeClick(recipe)}
+                      onEdit={
+                        isAdmin ? () => handleEditRecipe(recipe) : undefined
+                      }
+                      onDelete={
+                        isAdmin ? () => handleDeleteRecipe(recipe) : undefined
+                      }
+                      showActions={isAdmin}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">🍽️</div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    No recipes found
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Try adjusting your filters or clear them to see all
+                    available recipes.
+                  </p>
+                  <button
+                    onClick={clearFilters}
+                    className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          {activeTab === 'list' && (
+            <RecipeListView
+              recipes={filteredRecipes} // Use filtered recipes to maintain search context if desired, or use 'recipes' for raw list
+              isAdmin={!!isAdmin}
+              onDelete={handleDeleteRecipe}
+              onEdit={handleEditRecipe}
+            />
+          )}
+        </>
       )}
 
-      <ConfirmationModal
+      {/* Replaced ConfirmationModal with SafeDeleteModal */}
+      <SafeDeleteModal
         isOpen={showDeleteModal}
         onClose={() => {
           setShowDeleteModal(false);
@@ -365,7 +377,7 @@ const Recipes: React.FC = () => {
         }}
         onConfirm={confirmDelete}
         title="Delete Recipe"
-        message={`Are you sure you want to delete "${recipeToDelete?.name}"? This action cannot be undone.`}
+        itemName={recipeToDelete?.name || ''}
       />
     </div>
   );

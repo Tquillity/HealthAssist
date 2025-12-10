@@ -124,7 +124,7 @@ const RecipeFiltersComponent: React.FC<RecipeFiltersProps> = ({
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="">All categories</option>
-            {metadata.categories.map((category: string) => (
+            {metadata?.categories?.map((category: string) => (
               <option key={category} value={category}>
                 {category.charAt(0).toUpperCase() + category.slice(1)}
               </option>
@@ -145,7 +145,7 @@ const RecipeFiltersComponent: React.FC<RecipeFiltersProps> = ({
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="">All difficulties</option>
-            {metadata.difficulties.map((difficulty: string) => (
+            {metadata?.difficulties?.map((difficulty: string) => (
               <option key={difficulty} value={difficulty}>
                 {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
               </option>
@@ -166,7 +166,7 @@ const RecipeFiltersComponent: React.FC<RecipeFiltersProps> = ({
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="">All cuisines</option>
-            {metadata.cuisines.map((cuisine: string) => (
+            {metadata?.cuisines?.map((cuisine: string) => (
               <option key={cuisine} value={cuisine}>
                 {cuisine}
               </option>
@@ -200,7 +200,7 @@ const RecipeFiltersComponent: React.FC<RecipeFiltersProps> = ({
             Dietary Tags
           </label>
           <div className="flex flex-wrap gap-2">
-            {metadata.dietaryTags.map((tag: string) => (
+            {metadata?.dietaryTags?.map((tag: string) => (
               <button
                 key={tag}
                 onClick={() => handleDietaryTagToggle(tag)}

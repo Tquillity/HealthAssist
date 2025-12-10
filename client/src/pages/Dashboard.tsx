@@ -36,7 +36,7 @@ const Dashboard: React.FC = () => {
         // Fetch total recipes count
         const recipesResponse = await recipesAPI.getAll();
         console.log('Recipes response:', recipesResponse);
-        setRecipesCount(recipesResponse.data.length);
+        setRecipesCount(recipesResponse.length);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
