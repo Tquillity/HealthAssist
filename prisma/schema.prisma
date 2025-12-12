@@ -1,10 +1,15 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "postgresql"
 }
+
+// =======================
+// AUTHENTICATION (Better-Auth)
+// =======================
 
 model User {
   id            String       @id @default(cuid())
@@ -16,8 +21,9 @@ model User {
   updatedAt     DateTime     @updatedAt
   sessions      Session[]
   accounts      Account[]
-  members       Member[]     // Relation to Households (Organizations)
-  invitations   Invitation[] // Pending invites
+  members       Member[]
+  invitations   Invitation[]
+  journalEntries JournalEntry[] // Private journal entries
 
   @@map("user")
 }
@@ -59,16 +65,23 @@ model Verification {
   @@map("verification")
 }
 
-// Better-Auth Organization Models (Households)
+// =======================
+// HOUSEHOLD / ORGANIZATION
+// =======================
+
 model Organization {
   id          String       @id
   name        String
   slug        String?
   logo        String?
   createdAt   DateTime     @default(now())
-  metadata    String?      // Store simplified household preferences here for now
+  metadata    String?
   members     Member[]
   invitations Invitation[]
+  mealPlans   MealPlan[]
+  // Custom recipes/routines created by this household
+  recipes     Recipe[]
+  routines    Routine[]
 
   @@unique([slug])
   @@map("organization")
@@ -98,4 +111,141 @@ model Invitation {
   user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
 
   @@map("invitation")
+}
+
+// =======================
+// DOMAIN: RECIPES (Sprint 2)
+// =======================
+
+model Recipe {
+  id             String         @id @default(cuid())
+  name           String
+  description    String?
+  imageUrl       String?
+  prepTime       Int?           // Minutes
+  cookTime       Int?           // Minutes
+  servings       Int?
+  category       String?        // Breakfast, Lunch, Dinner, etc.
+  tags           String[]
+  
+  // Relations
+  ingredients    Ingredient[]
+  instructions   Instruction[]
+  mealPlanItems  MealPlanItem[]
+
+  // Ownership / Visibility
+  isSystem       Boolean        @default(false) // True = Visible to everyone (Kitchen Manifest)
+  organizationId String?        // Null if System, ID if Custom
+  organization   Organization?  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([organizationId])
+  @@index([isSystem])
+  @@map("recipe")
+}
+
+model Ingredient {
+  id        String  @id @default(cuid())
+  recipeId  String
+  recipe    Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  name      String
+  quantity  Float
+  unit      String
+  notes     String?
+
+  @@index([recipeId])
+  @@map("ingredient")
+}
+
+model Instruction {
+  id         String @id @default(cuid())
+  recipeId   String
+  recipe     Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  stepNumber Int
+  text       String
+
+  @@index([recipeId])
+  @@map("instruction")
+}
+
+// =======================
+// DOMAIN: MEAL PLANS (Sprint 2)
+// =======================
+
+model MealPlan {
+  id             String         @id @default(cuid())
+  organizationId String
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  startDate      DateTime
+  endDate        DateTime
+  items          MealPlanItem[]
+  
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([organizationId])
+  @@index([startDate, endDate])
+  @@map("meal_plan")
+}
+
+model MealPlanItem {
+  id         String   @id @default(cuid())
+  mealPlanId String
+  mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  recipeId   String
+  recipe     Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  date       DateTime
+  mealType   String   // breakfast, lunch, dinner, snack
+  servings   Float    @default(1)
+  createdAt  DateTime  @default(now())
+
+  @@index([mealPlanId])
+  @@index([recipeId])
+  @@index([date])
+  @@map("meal_plan_item")
+}
+
+// =======================
+// DOMAIN: WELLNESS (Sprint 2)
+// =======================
+
+model Routine {
+  id             String        @id @default(cuid())
+  name           String
+  description    String?
+  category       String?
+  frequency      String?
+  
+  // Ownership / Visibility
+  isSystem       Boolean       @default(false)
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([organizationId])
+  @@index([isSystem])
+  @@map("routine")
+}
+
+model JournalEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  date      DateTime  @default(now())
+  mood      Int?     // 1-10
+  tags      String[]
+  title     String?
+  content   String?
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([date])
+  @@map("journal_entry")
 }

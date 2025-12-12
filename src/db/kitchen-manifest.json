@@ -1,0 +1,157 @@
+{
+  "recipes": [
+    {
+      "name": "Classic Pancakes",
+      "description": "Fluffy and delicious pancakes perfect for breakfast",
+      "prepTime": 10,
+      "cookTime": 15,
+      "servings": 4,
+      "category": "Breakfast",
+      "tags": ["breakfast", "pancakes", "quick"],
+      "ingredients": [
+        { "name": "all-purpose flour", "quantity": 1.5, "unit": "cup" },
+        { "name": "baking powder", "quantity": 3.5, "unit": "teaspoon" },
+        { "name": "salt", "quantity": 1, "unit": "teaspoon" },
+        { "name": "white sugar", "quantity": 1, "unit": "tablespoon" },
+        { "name": "milk", "quantity": 1.25, "unit": "cup" },
+        { "name": "egg", "quantity": 1, "unit": "piece" },
+        { "name": "butter", "quantity": 3, "unit": "tablespoon", "melted": true }
+      ],
+      "instructions": [
+        { "stepNumber": 1, "text": "In a large bowl, sift together the flour, baking powder, salt and sugar." },
+        { "stepNumber": 2, "text": "Make a well in the center and pour in the milk, egg and melted butter; mix until smooth." },
+        { "stepNumber": 3, "text": "Heat a lightly oiled griddle or frying pan over medium-high heat." },
+        { "stepNumber": 4, "text": "Pour or scoop the batter onto the griddle, using approximately 1/4 cup for each pancake." },
+        { "stepNumber": 5, "text": "Brown on both sides and serve hot." }
+      ]
+    },
+    {
+      "name": "Grilled Chicken Salad",
+      "description": "Healthy and protein-packed salad with grilled chicken",
+      "prepTime": 15,
+      "cookTime": 20,
+      "servings": 2,
+      "category": "Lunch",
+      "tags": ["lunch", "salad", "healthy", "chicken"],
+      "ingredients": [
+        { "name": "chicken breast", "quantity": 2, "unit": "piece" },
+        { "name": "mixed greens", "quantity": 4, "unit": "cup" },
+        { "name": "cherry tomatoes", "quantity": 1, "unit": "cup" },
+        { "name": "cucumber", "quantity": 1, "unit": "piece", "notes": "sliced" },
+        { "name": "red onion", "quantity": 0.25, "unit": "piece", "notes": "thinly sliced" },
+        { "name": "olive oil", "quantity": 2, "unit": "tablespoon" },
+        { "name": "lemon juice", "quantity": 1, "unit": "tablespoon" },
+        { "name": "salt", "quantity": 0.5, "unit": "teaspoon" },
+        { "name": "black pepper", "quantity": 0.25, "unit": "teaspoon" }
+      ],
+      "instructions": [
+        { "stepNumber": 1, "text": "Season chicken breasts with salt and pepper." },
+        { "stepNumber": 2, "text": "Grill chicken for 6-7 minutes per side until cooked through." },
+        { "stepNumber": 3, "text": "Let chicken rest, then slice." },
+        { "stepNumber": 4, "text": "In a large bowl, combine mixed greens, tomatoes, cucumber, and red onion." },
+        { "stepNumber": 5, "text": "Whisk together olive oil, lemon juice, salt, and pepper for dressing." },
+        { "stepNumber": 6, "text": "Toss salad with dressing and top with sliced chicken." }
+      ]
+    },
+    {
+      "name": "Spaghetti Carbonara",
+      "description": "Creamy Italian pasta dish with bacon and eggs",
+      "prepTime": 10,
+      "cookTime": 20,
+      "servings": 4,
+      "category": "Dinner",
+      "tags": ["dinner", "pasta", "italian", "comfort food"],
+      "ingredients": [
+        { "name": "spaghetti", "quantity": 1, "unit": "pound" },
+        { "name": "bacon", "quantity": 8, "unit": "ounce", "notes": "diced" },
+        { "name": "egg", "quantity": 4, "unit": "piece" },
+        { "name": "parmesan cheese", "quantity": 1, "unit": "cup", "notes": "grated" },
+        { "name": "black pepper", "quantity": 1, "unit": "teaspoon", "notes": "freshly ground" },
+        { "name": "salt", "quantity": 1, "unit": "teaspoon" },
+        { "name": "garlic", "quantity": 2, "unit": "clove", "notes": "minced" }
+      ],
+      "instructions": [
+        { "stepNumber": 1, "text": "Bring a large pot of salted water to boil and cook spaghetti according to package directions." },
+        { "stepNumber": 2, "text": "While pasta cooks, fry bacon in a large pan until crispy." },
+        { "stepNumber": 3, "text": "In a bowl, whisk together eggs, parmesan, and black pepper." },
+        { "stepNumber": 4, "text": "Drain pasta, reserving 1 cup of pasta water." },
+        { "stepNumber": 5, "text": "Add hot pasta to the pan with bacon, remove from heat." },
+        { "stepNumber": 6, "text": "Quickly toss with egg mixture, adding pasta water as needed to create a creamy sauce." },
+        { "stepNumber": 7, "text": "Serve immediately with extra parmesan and pepper." }
+      ]
+    },
+    {
+      "name": "Overnight Oats",
+      "description": "Make-ahead breakfast that's ready when you wake up",
+      "prepTime": 5,
+      "cookTime": 0,
+      "servings": 1,
+      "category": "Breakfast",
+      "tags": ["breakfast", "oats", "meal prep", "healthy"],
+      "ingredients": [
+        { "name": "rolled oats", "quantity": 0.5, "unit": "cup" },
+        { "name": "milk", "quantity": 0.5, "unit": "cup" },
+        { "name": "greek yogurt", "quantity": 0.25, "unit": "cup" },
+        { "name": "honey", "quantity": 1, "unit": "tablespoon" },
+        { "name": "chia seeds", "quantity": 1, "unit": "tablespoon" },
+        { "name": "vanilla extract", "quantity": 0.5, "unit": "teaspoon" },
+        { "name": "berries", "quantity": 0.5, "unit": "cup", "notes": "fresh or frozen" }
+      ],
+      "instructions": [
+        { "stepNumber": 1, "text": "In a jar or bowl, combine oats, milk, yogurt, honey, chia seeds, and vanilla." },
+        { "stepNumber": 2, "text": "Stir well until everything is combined." },
+        { "stepNumber": 3, "text": "Cover and refrigerate overnight (at least 6 hours)." },
+        { "stepNumber": 4, "text": "In the morning, top with berries and enjoy cold or at room temperature." }
+      ]
+    },
+    {
+      "name": "Vegetable Stir Fry",
+      "description": "Quick and colorful vegetable stir fry with tofu",
+      "prepTime": 15,
+      "cookTime": 10,
+      "servings": 3,
+      "category": "Dinner",
+      "tags": ["dinner", "vegetarian", "stir fry", "quick"],
+      "ingredients": [
+        { "name": "tofu", "quantity": 14, "unit": "ounce", "notes": "firm, cubed" },
+        { "name": "broccoli", "quantity": 2, "unit": "cup", "notes": "florets" },
+        { "name": "bell pepper", "quantity": 2, "unit": "piece", "notes": "sliced" },
+        { "name": "carrot", "quantity": 2, "unit": "piece", "notes": "sliced" },
+        { "name": "soy sauce", "quantity": 3, "unit": "tablespoon" },
+        { "name": "sesame oil", "quantity": 1, "unit": "tablespoon" },
+        { "name": "ginger", "quantity": 1, "unit": "tablespoon", "notes": "minced" },
+        { "name": "garlic", "quantity": 3, "unit": "clove", "notes": "minced" },
+        { "name": "cornstarch", "quantity": 1, "unit": "teaspoon" }
+      ],
+      "instructions": [
+        { "stepNumber": 1, "text": "Press tofu to remove excess water, then cut into cubes." },
+        { "stepNumber": 2, "text": "Heat sesame oil in a large wok or pan over high heat." },
+        { "stepNumber": 3, "text": "Add tofu and cook until golden brown on all sides." },
+        { "stepNumber": 4, "text": "Add ginger and garlic, stir for 30 seconds." },
+        { "stepNumber": 5, "text": "Add all vegetables and stir fry for 3-4 minutes until crisp-tender." },
+        { "stepNumber": 6, "text": "Mix soy sauce with cornstarch and add to pan." },
+        { "stepNumber": 7, "text": "Cook for 1-2 minutes until sauce thickens. Serve hot over rice." }
+      ]
+    }
+  ],
+  "routines": [
+    {
+      "name": "Morning Meditation",
+      "description": "Start your day with 10 minutes of mindfulness",
+      "category": "wellness",
+      "frequency": "daily"
+    },
+    {
+      "name": "Evening Walk",
+      "description": "Take a 30-minute walk after dinner",
+      "category": "exercise",
+      "frequency": "daily"
+    },
+    {
+      "name": "Weekly Meal Prep",
+      "description": "Prepare meals for the week ahead",
+      "category": "habit",
+      "frequency": "weekly"
+    }
+  ]
+}

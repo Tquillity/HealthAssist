@@ -1,14 +1,15 @@
+import 'dotenv/config';
 import { defineConfig } from 'prisma/config';
 
-// For Prisma generate, we can use a placeholder URL if DATABASE_URL is not set
-// The actual connection is handled in src/lib/db.ts with the Neon adapter
-const databaseUrl =
-  process.env.DATABASE_URL ||
-  'postgresql://placeholder:placeholder@localhost:5432/placeholder';
+// Prisma 7 config - datasource URL must be in prisma.config.ts, not schema.prisma
+// Load .env file explicitly for Prisma CLI commands
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL environment variable is not set');
+}
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
   datasource: {
-    url: databaseUrl,
+    url: process.env.DATABASE_URL,
   },
 });

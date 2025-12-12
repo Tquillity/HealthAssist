@@ -1,7 +1,6 @@
 {
-  "name": "HA",
-  "version": "1.0.0",
-  "description": "HealthAssist - A comprehensive PWA for health management",
+  "name": "health-assist",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,40 +11,8 @@
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
-    "clean": "rm -rf .next node_modules .turbo",
-    "prepare": "husky"
-  },
-  "keywords": [
-    "health",
-    "wellness",
-    "pwa",
-    "nextjs",
-    "postgresql",
-    "prisma",
-    "typescript"
-  ],
-  "author": "Health Hub Team",
-  "license": "MIT",
-  "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=8.0.0"
-  },
-  "packageManager": "pnpm@10.17.1",
-  "devDependencies": {
-    "@types/ws": "^8.18.1",
-    "dotenv": "^17.2.3",
-    "eslint": "^9.36.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.21",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.2.0",
-    "prettier": "^3.6.2",
-    "typescript-eslint": "^8.44.1"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "eslint --fix",
-    "*.{js,jsx,ts,tsx,md,json}": "prettier --write"
+    "db:seed": "tsx src/db/seed.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
@@ -62,5 +29,28 @@
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.0.0",
     "ws": "^8.18.3"
-  }
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@types/ws": "^8.18.1",
+    "dotenv": "^17.2.3",
+    "eslint": "^9.36.0",
+    "eslint-config-next": "15.1.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.21",
+    "prettier": "^3.6.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.2"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "eslint --fix",
+    "*.{js,jsx,ts,tsx,md,json}": "prettier --write"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@10.17.1"
 }
