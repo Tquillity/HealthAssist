@@ -1,3 +1,4 @@
+// src/lib/auth.ts
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { organization } from 'better-auth/plugins';
@@ -11,11 +12,8 @@ export const auth = betterAuth({
     enabled: true,
   },
   secret: process.env.BETTER_AUTH_SECRET!,
-  baseURL:
-    process.env.BETTER_AUTH_URL ||
-    process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
-    'http://localhost:3000',
+  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
   plugins: [
-    organization(), // Enables Household logic
+    organization(),
   ],
 });

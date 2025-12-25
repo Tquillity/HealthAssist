@@ -18,7 +18,7 @@ export function RecipeFilters({ categories }: RecipeFiltersProps) {
     'category',
     parseAsString.withDefault('all')
   );
-  const [_isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   return (
     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

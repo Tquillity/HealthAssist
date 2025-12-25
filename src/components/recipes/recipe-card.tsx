@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Clock, Users, ChefHat } from 'lucide-react';
 import { type RecipeWithDetails } from '@/actions/recipe-actions';
-import { cn } from '@/lib/utils';
 
 interface RecipeCardProps {
   recipe: RecipeWithDetails;

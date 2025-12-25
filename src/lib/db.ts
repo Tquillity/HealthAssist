@@ -1,19 +1,37 @@
-import 'dotenv/config';
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { PrismaNeon } from '@prisma/adapter-neon';
+// src/lib/db.ts
 import { PrismaClient } from '@prisma/client';
-import ws from 'ws';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
-// Configure WebSocket for Node.js (required for Neon serverless)
-neonConfig.webSocketConstructor = ws;
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
-const connectionString = process.env.DATABASE_URL!;
+const createPrismaClient = () => {
+  const connectionString = process.env.DATABASE_URL;
 
-if (!connectionString) {
-  throw new Error('DATABASE_URL environment variable is not set');
-}
+  if (!connectionString) {
+    throw new Error('❌ DATABASE_URL is not defined in .env');
+  }
 
-const pool = new Pool({ connectionString });
-const adapter = new PrismaNeon(pool);
+  // Use standard 'pg' Pool - more stable for local Next.js dev
+  const pool = new Pool({ 
+    connectionString,
+    max: 10, // Limit connections to prevent Neon exhaustion
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+  });
 
-export const prisma = new PrismaClient({ adapter });
+  const adapter = new PrismaPg(pool);
+
+  console.log('🔌 [Prisma] Initializing client with standard PG adapter');
+
+  return new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  });
+};
+
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;

@@ -33,6 +33,8 @@ model Session {
   userId    String
   token     String
   expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
   ipAddress String?
   userAgent String?
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -46,6 +48,8 @@ model Account {
   userId       String
   accountId    String
   providerId   String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
   accessToken  String?
   refreshToken String?
   expiresAt    DateTime?

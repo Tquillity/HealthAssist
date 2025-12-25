@@ -9,6 +9,8 @@
 
 # Next.js – core build output (covers both Webpack and Turbopack)
 /.next/
+.next
+.next/
 /out/
 /build/
 
@@ -54,7 +56,7 @@ next-env.d.ts
 
 # Package manager lock files (only commit the one you actually use)
 # For pnpm projects – commit pnpm-lock.yaml, ignore the others
-# package-lock.json    # ← uncomment if you ever switch to npm
+package-lock.json    # ← ignore npm lock file (using pnpm)
 # yarn.lock            # ← uncomment if you ever switch to yarn
 !pnpm-lock.yaml        # ← explicitly allow pnpm-lock.yaml to be committed
 
