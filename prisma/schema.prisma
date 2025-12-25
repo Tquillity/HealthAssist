@@ -222,6 +222,10 @@ model Routine {
   category       String?
   frequency      String?
   
+  // Wellness Engine fields (Sprint 4)
+  energyLevel    String        @default("medium") // "low", "medium", "high"
+  estimatedTime  Int           @default(15)       // minutes
+  
   // Ownership / Visibility
   isSystem       Boolean       @default(false)
   organizationId String?
@@ -232,6 +236,7 @@ model Routine {
 
   @@index([organizationId])
   @@index([isSystem])
+  @@index([energyLevel, estimatedTime]) // For lottery queries
   @@map("routine")
 }
 
@@ -240,16 +245,18 @@ model JournalEntry {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  date      DateTime  @default(now())
-  mood      Int?     // 1-10
+  date      DateTime  @db.Date // Store as date only (YYYY-MM-DD)
+  mood      Int?      // 1-10
+  energy    Int?      // 1-10 (Sprint 4)
+  sleepHours Float?   // Hours slept (Sprint 4)
   tags      String[]
   title     String?
-  content   String?
+  content   String?   @db.Text
   
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  @@index([userId])
-  @@index([date])
+  @@unique([userId, date], name: "userId_date") // One entry per user per day
+  @@index([userId, date])
   @@map("journal_entry")
 }

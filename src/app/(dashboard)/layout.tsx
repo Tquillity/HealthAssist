@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   CalendarDays,
   User,
+  Sparkles,
 } from 'lucide-react';
 
 export default async function DashboardLayout({
@@ -28,6 +29,7 @@ export default async function DashboardLayout({
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Recipes', href: '/recipes', icon: UtensilsCrossed },
     { name: 'Meal Planner', href: '/meal-planner', icon: CalendarDays },
+    { name: 'Routines', href: '/routines', icon: Sparkles },
     { name: 'Journal', href: '/journal', icon: BookOpen },
     { name: 'Groceries', href: '/groceries', icon: ShoppingCart },
   ];

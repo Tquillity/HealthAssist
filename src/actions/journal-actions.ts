@@ -1,0 +1,129 @@
+'use server';
+
+import { z } from 'zod';
+import { prisma } from '@/lib/db';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { revalidatePath } from 'next/cache';
+import { startOfMonth, endOfMonth } from 'date-fns';
+
+// Zod schemas
+const CreateJournalSchema = z.object({
+  date: z.string().or(z.date()), // Accept ISO string or Date
+  mood: z.number().int().min(1).max(10).optional(),
+  energy: z.number().int().min(1).max(10).optional(),
+  sleepHours: z.number().positive().max(24).optional(),
+  notes: z.string().optional(),
+  tags: z.array(z.string()).default([]),
+});
+
+export async function logJournalEntry(data: z.infer<typeof CreateJournalSchema>) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      return { success: false, error: 'Unauthorized' };
+    }
+
+    // Validate input
+    const validated = CreateJournalSchema.parse(data);
+
+    // Normalize date to start of day (YYYY-MM-DD)
+    const date = typeof validated.date === 'string' 
+      ? new Date(validated.date) 
+      : validated.date;
+    date.setHours(0, 0, 0, 0);
+
+    // Upsert entry (create or update if exists for this date)
+    const entry = await prisma.journalEntry.upsert({
+      where: {
+        userId_date: {
+          userId: session.user.id,
+          date: date,
+        },
+      },
+      update: {
+        mood: validated.mood ?? undefined,
+        energy: validated.energy ?? undefined,
+        sleepHours: validated.sleepHours ?? undefined,
+        content: validated.notes ?? undefined,
+        tags: validated.tags,
+      },
+      create: {
+        userId: session.user.id,
+        date: date,
+        mood: validated.mood ?? undefined,
+        energy: validated.energy ?? undefined,
+        sleepHours: validated.sleepHours ?? undefined,
+        content: validated.notes ?? undefined,
+        tags: validated.tags,
+      },
+    });
+
+    revalidatePath('/journal');
+    return { success: true, data: entry };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error: error.errors[0]?.message || 'Validation failed' };
+    }
+    console.error('Error logging journal entry:', error);
+    return { success: false, error: 'Failed to log journal entry' };
+  }
+}
+
+export async function getMonthlyStats(month: number, year: number) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      return { success: false, error: 'Unauthorized', data: null };
+    }
+
+    // Calculate month boundaries
+    const monthStart = startOfMonth(new Date(year, month - 1, 1));
+    const monthEnd = endOfMonth(new Date(year, month - 1, 1));
+
+    // Fetch all entries for this month
+    const entries = await prisma.journalEntry.findMany({
+      where: {
+        userId: session.user.id,
+        date: {
+          gte: monthStart,
+          lte: monthEnd,
+        },
+      },
+      orderBy: {
+        date: 'asc',
+      },
+    });
+
+    // Aggregate stats
+    const stats = {
+      entries: entries.map((e) => ({
+        date: e.date,
+        mood: e.mood,
+        energy: e.energy,
+        sleepHours: e.sleepHours,
+      })),
+      averageMood: entries.length > 0 && entries.some((e) => e.mood !== null)
+        ? entries.reduce((sum, e) => sum + (e.mood ?? 0), 0) / entries.filter((e) => e.mood !== null).length
+        : null,
+      averageEnergy: entries.length > 0 && entries.some((e) => e.energy !== null)
+        ? entries.reduce((sum, e) => sum + (e.energy ?? 0), 0) / entries.filter((e) => e.energy !== null).length
+        : null,
+      averageSleep: entries.length > 0 && entries.some((e) => e.sleepHours !== null)
+        ? entries.reduce((sum, e) => sum + (e.sleepHours ?? 0), 0) / entries.filter((e) => e.sleepHours !== null).length
+        : null,
+    };
+
+    return { success: true, error: null, data: stats };
+  } catch (error) {
+    console.error('Error fetching monthly stats:', error);
+    return { success: false, error: 'Failed to fetch monthly stats', data: null };
+  }
+}
+
